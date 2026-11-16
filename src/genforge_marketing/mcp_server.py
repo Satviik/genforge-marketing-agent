@@ -59,7 +59,14 @@ def get_marketing_capabilities() -> str:
 def load_business_profile(profile_path: str = "genforge-business.json") -> str:
     """Load and validate GenForge's business profile from a local JSON file."""
     try:
-        path = Path(profile_path).expanduser().resolve()
+        requested = Path(profile_path).expanduser()
+        if requested.suffix.lower() != ".json" or requested.name in {"", ".", ".."}:
+            return _json_error(ValueError("profile_path must point to a JSON profile file"))
+        path = requested.resolve()
+        project_root = Path.cwd().resolve()
+        profile_store = (get_settings().data_dir / "profiles").resolve()
+        if path.parent not in {project_root, profile_store}:
+            return _json_error(ValueError("Profile must be in the project root or configured data/profiles directory"))
         if not path.is_file():
             return _json_error(FileNotFoundError(f"Profile file not found: {path}"))
         profile = BusinessProfile.model_validate_json(path.read_text(encoding="utf-8"))
