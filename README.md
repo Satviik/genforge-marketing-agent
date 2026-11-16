@@ -1,26 +1,23 @@
 # GenForge Marketing Agent
 
-An AI-assisted marketing operations layer for GenForge. It turns product and trend signals into a reviewable marketing workflow: research, content planning, draft generation, publishing integrations, and performance feedback.
+A modular marketing planning and operations system for GenForge. The first implementation milestone builds the screenshot requirements independently; integration with the existing Instagram screening CLI is deliberately deferred until the marketing system is ready.
 
-## Design principles
+## Scope being built
 
-- **Human approval first:** generated content is reviewed before publishing.
-- **Provider-agnostic:** social networks and AI providers sit behind adapters.
-- **Reuse existing intelligence:** consume trend data from `gen-forge-screening-agent`; do not duplicate its collection logic.
-- **Safe by default:** credentials stay in environment variables and are never committed.
-- **Incremental delivery:** begin with a reliable local workflow before adding autonomous scheduling or publishing.
+- Structured GenForge business profile and product catalogue.
+- GitHub skill/MCP repository research with evidence-based reputation and license checks.
+- Monthly content planning for static posts and Reels.
+- Excel export with exactly two planning worksheets: `Posts` and `Reels`.
+- Content production adapters for AI and MCP tools.
+- Approval queue and scheduled workflow triggers.
+- Publishing adapter with a hard human-approval gate.
+- Analytics capture and feedback for future plans.
 
-## Planned workflow
+## Architecture and requirements
 
-1. Read trend/product signals from the screening CLI through a stable JSON contract.
-2. Rank opportunities for GenForge using relevance, audience fit, and evidence.
-3. Build a content brief (platform, audience, angle, format, CTA).
-4. Generate editable captions and creative direction.
-5. Store drafts with explicit review status.
-6. Add publishing adapters only after account permissions and platform constraints are configured.
-7. Ingest performance metrics and feed learnings back into planning.
+See [Product Requirements](docs/PRODUCT_REQUIREMENTS.md) and [Architecture](docs/ARCHITECTURE.md).
 
-## Quick start
+## Development setup
 
 Requires Python 3.12+.
 
@@ -28,17 +25,13 @@ Requires Python 3.12+.
 py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[dev]"
-copy .env.example .env
-genforge-marketing --help
 pytest
 ```
 
-On macOS/Linux, activate with `source .venv/bin/activate`.
+## Integration boundary
 
-## Configuration
+Do not connect this repository to `gen-forge-screening-agent` while the planning, workbook, skill research, content production, approval, publishing and analytics milestones are still being built. Until then, research/trend inputs can be entered manually or loaded from fixtures. The CLI connection is the final integration milestone.
 
-Copy `.env.example` to `.env`. Never commit real API keys or account credentials.\n\nFor direct CLI synchronization, install `genforge-screening-agent` in the same Python environment and set `GENFORGE_MARKETING_SCREENING_WORKDIR` to the local screening repository folder. The example assumes both repositories are sibling folders; the screening process runs from that folder so it reads the existing `genforge.db` file.
+## Safety
 
-## Current status
-
-Phase 1 foundation: configuration, typed models, a local CLI, a JSON handoff contract for the screening agent, and tests. Publishing integrations and autonomous execution are intentionally not enabled yet.
+Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
