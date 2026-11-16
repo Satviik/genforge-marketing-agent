@@ -1,0 +1,1 @@
+"""External skill and MCP research catalogue."""
