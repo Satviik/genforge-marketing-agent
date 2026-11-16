@@ -70,6 +70,7 @@ def strategy(
     output: Path = typer.Option(Path("output/monthly-strategy.json"), "--output", "-o"),
 ) -> None:
     """Generate a grounded monthly content strategy from the business profile."""
+    settings = get_settings()
     try:
         profile = BusinessProfile.model_validate_json(profile_file.read_text(encoding="utf-8"))
         if settings.ai_provider.lower() in {"openai", "openai_compatible"}:
