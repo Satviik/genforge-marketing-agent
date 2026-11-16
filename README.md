@@ -10,6 +10,7 @@ A modular marketing planning and operations system for GenForge. The first imple
 - A five-pillar strategy engine with optional OpenAI-compatible model generation and validated structured output.
 - Excel export with exactly two planning worksheets: `Posts` and `Reels`.
 - Content production adapters for AI and MCP tools.
+- Structured first-draft Instagram carousel and Reel content, including slide plans, hooks, scenes, captions, hashtags, CTAs and visual prompts.
 - Approval queue and scheduled workflow triggers.
 - Publishing adapter with a hard human-approval gate.
 - Analytics capture and feedback for future plans.
@@ -32,7 +33,7 @@ genforge-marketing research-skills --query "instagram marketing MCP" --limit 10
 genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --posts 8 --reels 8
 ```
 
-## Monthly strategy\n\nCreate a local, deterministic strategy with `genforge-marketing strategy genforge-business.json --year 2026 --month 12`. To use a chat-completions compatible model, set `GENFORGE_MARKETING_AI_PROVIDER=openai`, `GENFORGE_MARKETING_AI_API_KEY`, `GENFORGE_MARKETING_AI_MODEL`, and optionally `GENFORGE_MARKETING_AI_BASE_URL` in `.env`. The default `none` mode uses the local strategy engine. Both modes validate the structured strategy and keep it in draft status.\n\n## GitHub skill research\n\nRun `genforge-marketing research-skills --query "instagram marketing MCP"` to discover and assess public repositories. The command saves a JSON catalogue and never clones, installs, or executes repository code. Set `GENFORGE_MARKETING_GITHUB_TOKEN` in `.env` to improve API rate limits.\n\n## Integration boundary
+## Content studio\n\nAfter creating a monthly plan JSON file, generate structured creative drafts with `genforge-marketing create-content genforge-business.json output/content-plan.json --output output/content-drafts.json`. The output includes carousel slide plans and Reel scene scripts, with fact-check notes. It does not generate final image/video files or publish anything; visual prompts are prepared for a future creative-tool integration.\n\n## Monthly strategy\n\nCreate a local, deterministic strategy with `genforge-marketing strategy genforge-business.json --year 2026 --month 12`. To use a chat-completions compatible model, set `GENFORGE_MARKETING_AI_PROVIDER=openai`, `GENFORGE_MARKETING_AI_API_KEY`, `GENFORGE_MARKETING_AI_MODEL`, and optionally `GENFORGE_MARKETING_AI_BASE_URL` in `.env`. The default `none` mode uses the local strategy engine. Both modes validate the structured strategy and keep it in draft status.\n\n## GitHub skill research\n\nRun `genforge-marketing research-skills --query "instagram marketing MCP"` to discover and assess public repositories. The command saves a JSON catalogue and never clones, installs, or executes repository code. Set `GENFORGE_MARKETING_GITHUB_TOKEN` in `.env` to improve API rate limits.\n\n## Integration boundary
 
 Do not connect this repository to `gen-forge-screening-agent` while the planning, workbook, skill research, content production, approval, publishing and analytics milestones are still being built. Until then, research/trend inputs can be entered manually or loaded from fixtures. The CLI connection is the final integration milestone.
 
