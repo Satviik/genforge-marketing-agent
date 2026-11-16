@@ -37,7 +37,7 @@ On macOS/Linux, activate with `source .venv/bin/activate`.
 
 ## Configuration
 
-Copy `.env.example` to `.env`. Never commit real API keys or account credentials.
+Copy `.env.example` to `.env`. Never commit real API keys or account credentials.\n\nFor direct CLI synchronization, install `genforge-screening-agent` in the same Python environment and set `GENFORGE_MARKETING_SCREENING_WORKDIR` to the local screening repository folder. The example assumes both repositories are sibling folders; the screening process runs from that folder so it reads the existing `genforge.db` file.
 
 ## Current status
 
