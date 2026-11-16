@@ -37,6 +37,7 @@ def run_screening_export(
     command: str = "genforge",
     timeout_seconds: int = 120,
     limit: int = 200,
+    working_directory: Path | None = None,
 ) -> OpportunityBatch:
     """Execute 'genforge export' and parse its JSON stdout."""
     try:
@@ -46,11 +47,15 @@ def run_screening_export(
             capture_output=True,
             text=True,
             timeout=timeout_seconds,
+            cwd=str(working_directory) if working_directory is not None else None,
         )
         payload: dict[str, Any] = json.loads(completed.stdout)
         return _parse_export(payload)
     except FileNotFoundError as exc:
-        raise ScreeningCLIError(f"Screening CLI executable not found: {command}") from exc
+        raise ScreeningCLIError(
+            "Could not launch the screening CLI. Verify the executable and "
+            f"configured working directory: {exc}"
+        ) from exc
     except subprocess.TimeoutExpired as exc:
         raise ScreeningCLIError(f"Screening CLI timed out after {timeout_seconds}s") from exc
     except subprocess.CalledProcessError as exc:
