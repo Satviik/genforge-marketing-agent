@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     data_dir: Path = Path("./data")
     screening_command: str = "genforge"
+    screening_workdir: Path | None = None
     screening_timeout_seconds: int = 120
 
 
