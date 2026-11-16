@@ -2,7 +2,10 @@
 
 from datetime import date, time
 from enum import StrEnum
-from pydantic import BaseModel, Field
+
+from pydantic import BaseModel, Field, model_validator
+
+from genforge_marketing.planning.occasions import MarketingOccasion
 
 
 class ApprovalStatus(StrEnum):
@@ -85,5 +88,16 @@ class ReelPlanItem(BaseModel):
 class MonthlyContentPlan(BaseModel):
     year: int
     month: int = Field(ge=1, le=12)
+    occasions: list[MarketingOccasion] = Field(default_factory=list)
     posts: list[PostPlanItem] = Field(default_factory=list)
     reels: list[ReelPlanItem] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def occasions_match_plan_month(self) -> "MonthlyContentPlan":
+        for occasion in self.occasions:
+            if occasion.date.year != self.year or occasion.date.month != self.month:
+                raise ValueError(
+                    f"Occasion '{occasion.name}' falls outside "
+                    f"{self.year}-{self.month:02d}."
+                )
+        return self
