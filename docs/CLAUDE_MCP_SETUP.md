@@ -20,7 +20,7 @@ The install includes the official Python MCP SDK. The server command is
 
 ## 2. Create the business profile
 
-Create `genforge-business.json` in the repository (or use another absolute path).
+Create `genforge-business.json` in the repository root, or place it in `data/profiles/`.
 Start with this shape and replace the examples with confirmed GenForge facts:
 
 ```json
