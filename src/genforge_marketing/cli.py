@@ -37,6 +37,7 @@ def sync_trends(
             command=settings.screening_command,
             timeout_seconds=settings.screening_timeout_seconds,
             limit=limit,
+            working_directory=settings.screening_workdir,
         )
     except ScreeningCLIError as exc:
         print(f"[red]Could not sync screening trends:[/red] {exc}")
