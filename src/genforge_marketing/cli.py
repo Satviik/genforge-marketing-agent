@@ -14,6 +14,7 @@ from genforge_marketing.profile.models import BusinessProfile
 from genforge_marketing.research.github_client import GitHubResearchError, GitHubSkillResearcher
 from genforge_marketing.config import get_settings
 from genforge_marketing.strategy.engine import generate_strategy
+from genforge_marketing.strategy.llm import OpenAICompatibleStrategyProvider, StrategyProviderError
 from genforge_marketing.workbook.exporter import export_monthly_plan
 
 app = typer.Typer(help="GenForge marketing planning and operations.")
@@ -71,13 +72,28 @@ def strategy(
     """Generate a grounded monthly content strategy from the business profile."""
     try:
         profile = BusinessProfile.model_validate_json(profile_file.read_text(encoding="utf-8"))
-        result = generate_strategy(profile, year, month)
-    except (ValueError, json.JSONDecodeError) as exc:
+        if settings.ai_provider.lower() in {"openai", "openai_compatible"}:
+            if not settings.ai_api_key or not settings.ai_model:
+                raise ValueError(
+                    "AI provider is enabled but GENFORGE_MARKETING_AI_API_KEY or "
+                    "GENFORGE_MARKETING_AI_MODEL is missing."
+                )
+            result = OpenAICompatibleStrategyProvider(
+                api_key=settings.ai_api_key,
+                model=settings.ai_model,
+                base_url=settings.ai_base_url,
+            ).generate(profile, year, month)
+            provider_label = f"AI provider: {settings.ai_provider} / {settings.ai_model}"
+        else:
+            result = generate_strategy(profile, year, month)
+            provider_label = "Strategy mode: local deterministic fallback"
+    except (ValueError, json.JSONDecodeError, StrategyProviderError) as exc:
         raise typer.BadParameter(str(exc)) from exc
 
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(result.model_dump_json(indent=2) + "\\n", encoding="utf-8")
     print(f"[bold cyan]{result.business_name} — {year}-{month:02d} strategy[/bold cyan]")
+    print(provider_label)
     print(f"Primary goal: {result.primary_goal}")
     print(f"Positioning: {result.positioning_summary}")
     table = Table(title="Content pillars")
