@@ -1,13 +1,10 @@
-"""Generate a balanced monthly calendar from explicit business inputs.
-
-This creates a schedule and production briefs, not AI-generated final copy.
-The latter belongs to the content studio milestone.
-"""
+"""Generate a balanced monthly calendar from explicit business inputs."""
 
 import calendar
 from datetime import date, time
 
 from genforge_marketing.planning.models import MonthlyContentPlan, PostPlanItem, ReelPlanItem
+from genforge_marketing.planning.occasions import OccasionCalendar
 from genforge_marketing.profile.models import BusinessProfile
 
 
@@ -19,7 +16,6 @@ def _scheduled_days(year: int, month: int, count: int) -> list[date]:
     days_in_month = calendar.monthrange(year, month)[1]
     if count > days_in_month:
         raise ValueError("Cannot schedule more than one item per day in a single content type")
-    # Spread items evenly across the month, avoiding a cluster at the start.
     return [
         date(year, month, min(days_in_month, round((index + 0.5) * days_in_month / count)))
         for index in range(count)
@@ -34,18 +30,26 @@ def generate_monthly_plan(
     reel_count: int = 8,
     post_time: time = time(19, 0),
     reel_time: time = time(18, 30),
+    occasion_calendar: OccasionCalendar | None = None,
 ) -> MonthlyContentPlan:
-    """Create draft calendar rows; no content is approved or published."""
+    """Create draft calendar rows; occasion inputs are explicit and never guessed."""
     if not profile.products:
         raise ValueError("Add at least one product to the business profile before planning.")
     products = [product for product in profile.products if product.available]
     if not products:
         raise ValueError("The business profile has no products marked available.")
 
+    if occasion_calendar and (occasion_calendar.year, occasion_calendar.month) != (year, month):
+        raise ValueError("Occasion calendar month/year must match the requested plan.")
+
     post_days = _scheduled_days(year, month, post_count)
     reel_days = _scheduled_days(year, month, reel_count)
     audience = ", ".join(profile.target_audiences)
-    plan = MonthlyContentPlan(year=year, month=month)
+    plan = MonthlyContentPlan(
+        year=year,
+        month=month,
+        occasions=occasion_calendar.occasions if occasion_calendar else [],
+    )
 
     for index, planned_date in enumerate(post_days, start=1):
         product = products[(index - 1) % len(products)]
