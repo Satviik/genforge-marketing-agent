@@ -1,0 +1,1 @@
+"""GenForge business profile domain."""
