@@ -13,6 +13,7 @@ from genforge_marketing.planning.generator import generate_monthly_plan
 from genforge_marketing.profile.models import BusinessProfile
 from genforge_marketing.research.github_client import GitHubResearchError, GitHubSkillResearcher
 from genforge_marketing.config import get_settings
+from genforge_marketing.strategy.engine import generate_strategy
 from genforge_marketing.workbook.exporter import export_monthly_plan
 
 app = typer.Typer(help="GenForge marketing planning and operations.")
@@ -58,6 +59,40 @@ def research_skills(
     print(table)
     print(f"[green]Research catalogue saved:[/green] {output}")
     print("[yellow]Research only: no repositories were cloned, installed or executed.[/yellow]")
+
+
+@app.command("strategy")
+def strategy(
+    profile_file: Path = typer.Argument(..., exists=True, readable=True, dir_okay=False),
+    year: int = typer.Option(..., "--year", min=2020, max=2100),
+    month: int = typer.Option(..., "--month", min=1, max=12),
+    output: Path = typer.Option(Path("output/monthly-strategy.json"), "--output", "-o"),
+) -> None:
+    """Generate a grounded monthly content strategy from the business profile."""
+    try:
+        profile = BusinessProfile.model_validate_json(profile_file.read_text(encoding="utf-8"))
+        result = generate_strategy(profile, year, month)
+    except (ValueError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(result.model_dump_json(indent=2) + "\\n", encoding="utf-8")
+    print(f"[bold cyan]{result.business_name} — {year}-{month:02d} strategy[/bold cyan]")
+    print(f"Primary goal: {result.primary_goal}")
+    print(f"Positioning: {result.positioning_summary}")
+    table = Table(title="Content pillars")
+    table.add_column("Pillar")
+    table.add_column("Share", justify="right")
+    table.add_column("Purpose")
+    for pillar in result.pillars:
+        table.add_row(pillar.name, f"{pillar.recommended_share:.0%}", pillar.purpose)
+    print(table)
+    if result.assumptions:
+        print("[yellow]Profile gaps to complete:[/yellow]")
+        for assumption in result.assumptions:
+            print(f" • {assumption}")
+    print(f"[green]Strategy saved:[/green] {output}")
+    print("[yellow]Strategy is a draft; review before using it as a publishing plan.[/yellow]")
 
 
 @app.command("init-profile")
