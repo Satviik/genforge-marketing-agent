@@ -11,6 +11,8 @@ from rich.table import Table
 from genforge_marketing import __version__
 from genforge_marketing.planning.generator import generate_monthly_plan
 from genforge_marketing.profile.models import BusinessProfile
+from genforge_marketing.research.github_client import GitHubResearchError, GitHubSkillResearcher
+from genforge_marketing.config import get_settings
 from genforge_marketing.workbook.exporter import export_monthly_plan
 
 app = typer.Typer(help="GenForge marketing planning and operations.")
@@ -20,6 +22,42 @@ app = typer.Typer(help="GenForge marketing planning and operations.")
 def version() -> None:
     """Show the installed package version."""
     print(f"GenForge Marketing Agent [bold cyan]v{__version__}[/bold cyan]")
+
+
+@app.command("research-skills")
+def research_skills(
+    query: str = typer.Option(
+        "instagram marketing OR social media content OR MCP server",
+        "--query",
+        "-q",
+        help="GitHub repository search query.",
+    ),
+    limit: int = typer.Option(10, "--limit", "-n", min=1, max=30),
+    output: Path = typer.Option(Path("data/github-skill-research.json"), "--output", "-o"),
+) -> None:
+    """Discover and assess GitHub marketing skills and MCP repositories."""
+    settings = get_settings()
+    try:
+        with GitHubSkillResearcher(token=settings.github_token) as researcher:
+            assessments = researcher.search(query=query, limit=limit)
+    except (GitHubResearchError, ValueError) as exc:
+        print(f"[red]GitHub research failed:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
+        json.dumps([item.model_dump(mode="json") for item in assessments], indent=2),
+        encoding="utf-8",
+    )
+    table = Table(title=f"GitHub skill research ({len(assessments)} repositories)")
+    table.add_column("Repository")
+    table.add_column("Score", justify="right")
+    table.add_column("Recommendation")
+    for item in sorted(assessments, key=lambda result: result.score, reverse=True):
+        table.add_row(item.full_name, f"{item.score:.1f}", item.recommendation)
+    print(table)
+    print(f"[green]Research catalogue saved:[/green] {output}")
+    print("[yellow]Research only: no repositories were cloned, installed or executed.[/yellow]")
 
 
 @app.command("init-profile")
