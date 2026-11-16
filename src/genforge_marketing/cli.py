@@ -13,6 +13,8 @@ from genforge_marketing.planning.generator import generate_monthly_plan
 from genforge_marketing.profile.models import BusinessProfile
 from genforge_marketing.research.github_client import GitHubResearchError, GitHubSkillResearcher
 from genforge_marketing.config import get_settings
+from genforge_marketing.content.studio import create_content_drafts
+from genforge_marketing.planning.models import MonthlyContentPlan
 from genforge_marketing.strategy.engine import generate_strategy
 from genforge_marketing.strategy.llm import OpenAICompatibleStrategyProvider, StrategyProviderError
 from genforge_marketing.workbook.exporter import export_monthly_plan
@@ -60,6 +62,32 @@ def research_skills(
     print(table)
     print(f"[green]Research catalogue saved:[/green] {output}")
     print("[yellow]Research only: no repositories were cloned, installed or executed.[/yellow]")
+
+
+@app.command("create-content")
+def create_content(
+    profile_file: Path = typer.Argument(..., exists=True, readable=True, dir_okay=False),
+    plan_file: Path = typer.Argument(..., exists=True, readable=True, dir_okay=False),
+    output: Path = typer.Option(Path("output/content-drafts.json"), "--output", "-o"),
+) -> None:
+    """Create first-draft post and Reel creative from a monthly plan."""
+    try:
+        profile = BusinessProfile.model_validate_json(profile_file.read_text(encoding="utf-8"))
+        plan = MonthlyContentPlan.model_validate_json(plan_file.read_text(encoding="utf-8"))
+        drafts = create_content_drafts(profile, plan)
+    except (ValueError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(drafts, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    table = Table(title="GenForge content studio")
+    table.add_column("Format")
+    table.add_column("Drafts", justify="right")
+    table.add_row("Posts", str(len(drafts["posts"])))
+    table.add_row("Reels", str(len(drafts["reels"])))
+    print(table)
+    print(f"[green]Creative drafts saved:[/green] {output}")
+    print("[yellow]Drafts only. Review facts, images, music rights and copy before approval.[/yellow]")
 
 
 @app.command("strategy")
