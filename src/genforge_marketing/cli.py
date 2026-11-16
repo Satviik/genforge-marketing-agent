@@ -15,6 +15,7 @@ from genforge_marketing.research.github_client import GitHubResearchError, GitHu
 from genforge_marketing.config import get_settings
 from genforge_marketing.content.studio import create_content_drafts
 from genforge_marketing.planning.models import MonthlyContentPlan
+from genforge_marketing.planning.occasions import OccasionCalendar
 from genforge_marketing.strategy.engine import generate_strategy
 from genforge_marketing.strategy.llm import OpenAICompatibleStrategyProvider, StrategyProviderError
 from genforge_marketing.workbook.exporter import export_monthly_plan
@@ -163,11 +164,19 @@ def plan_month(
     reels: int = typer.Option(8, "--reels", min=0, max=31),
     post_time: str = typer.Option("19:00", "--post-time"),
     reel_time: str = typer.Option("18:30", "--reel-time"),
+    occasions_file: Path | None = typer.Option(
+        None, "--occasions", help="JSON file with researched festival/seasonal occasions."
+    ),
     output: Path = typer.Option(Path("output/content-plan.xlsx"), "--output", "-o"),
 ) -> None:
     """Generate a monthly draft calendar and a two-sheet Excel workbook."""
     try:
         profile = BusinessProfile.model_validate_json(profile_file.read_text(encoding="utf-8"))
+        occasion_calendar = (
+            OccasionCalendar.model_validate_json(occasions_file.read_text(encoding="utf-8"))
+            if occasions_file
+            else None
+        )
         plan = generate_monthly_plan(
             profile=profile,
             year=year,
@@ -176,6 +185,7 @@ def plan_month(
             reel_count=reels,
             post_time=time.fromisoformat(post_time),
             reel_time=time.fromisoformat(reel_time),
+            occasion_calendar=occasion_calendar,
         )
     except (ValueError, json.JSONDecodeError) as exc:
         raise typer.BadParameter(str(exc)) from exc
