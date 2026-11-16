@@ -5,7 +5,7 @@ A modular marketing planning and operations system for GenForge. The first imple
 ## Scope being built
 
 - Structured GenForge business profile and product catalogue.
-- GitHub skill/MCP repository research with evidence-based reputation and license checks.
+- GitHub skill/MCP repository research with evidence-based reputation and license checks (`research-skills`).
 - Monthly content planning for static posts and Reels.
 - Excel export with exactly two planning worksheets: `Posts` and `Reels`.
 - Content production adapters for AI and MCP tools.
@@ -26,9 +26,12 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[dev]"
 pytest
+genforge-marketing init-profile
+genforge-marketing research-skills --query "instagram marketing MCP" --limit 10
+genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --posts 8 --reels 8
 ```
 
-## Integration boundary
+## GitHub skill research\n\nRun `genforge-marketing research-skills --query "instagram marketing MCP"` to discover and assess public repositories. The command saves a JSON catalogue and never clones, installs, or executes repository code. Set `GENFORGE_MARKETING_GITHUB_TOKEN` in `.env` to improve API rate limits.\n\n## Integration boundary
 
 Do not connect this repository to `gen-forge-screening-agent` while the planning, workbook, skill research, content production, approval, publishing and analytics milestones are still being built. Until then, research/trend inputs can be entered manually or loaded from fixtures. The CLI connection is the final integration milestone.
 
