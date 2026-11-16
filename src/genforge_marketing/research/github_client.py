@@ -87,6 +87,16 @@ class GitHubSkillResearcher:
             pushed_at = _parse_datetime(details.get("pushed_at"))
             created_at = _parse_datetime(details.get("created_at"))
             license_data = details.get("license") or {}
+            github_dir = (
+                self._get(f"/repos/{full_name}/contents/.github")
+                if ".github" in root_names
+                else []
+            )
+            github_names = {
+                entry.get("name", "").lower()
+                for entry in github_dir
+                if isinstance(entry, dict)
+            } if isinstance(github_dir, list) else set()
             evidence = GitHubRepositoryEvidence(
                 full_name=full_name,
                 description=details.get("description") or "",
@@ -98,9 +108,9 @@ class GitHubSkillResearcher:
                 created_at=created_at,
                 has_readme=any(name.startswith("readme") for name in root_names),
                 has_tests=any(name in {"tests", "test"} for name in root_names),
-                has_release=bool(details.get("has_downloads")) and self._has_release(full_name),
+                has_release=self._has_release(full_name),
                 topics=details.get("topics") or [],
-                security_policy="security.md" in root_names or ".github" in root_names,
+                security_policy="security.md" in root_names or "security.md" in github_names,
             )
             assessments.append(assess_repository(evidence))
         return assessments
