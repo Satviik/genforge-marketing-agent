@@ -210,6 +210,28 @@ def plan_month(
 
 
 
+@radar_app.command("detect-scenes")
+def radar_detect_scenes(
+    input_file: Path = typer.Option(..., "--input", exists=True, readable=True, dir_okay=False, help="Local video file."),
+    threshold: float = typer.Option(0.30, "--threshold", min=0.0, max=1.0, help="Scene sensitivity threshold (0-1)."),
+    output: Path = typer.Option(Path("output/scene-changes.json"), "--output", "-o"),
+) -> None:
+    """Detect visual scene changes in a local video with FFmpeg."""
+    from genforge_marketing.intelligence.media_inspector import MediaInspectionError
+    from genforge_marketing.intelligence.scene_detector import detect_scene_changes
+
+    try:
+        report = detect_scene_changes(input_file, threshold)
+    except (MediaInspectionError, ValueError, FileNotFoundError) as exc:
+        print(f"[red]Scene detection failed:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    print(f"[green]Scene-change report saved:[/green] {output}")
+    print(f"Detected changes: {report['scene_change_count']}")
+    print("[yellow]Visual change detection only; scene labels and narrative roles are not inferred.[/yellow]")
+
+
 @radar_app.command("inspect-media")
 def radar_inspect_media(
     input_file: Path = typer.Option(..., "--input", exists=True, readable=True, dir_okay=False, help="Local video file."),
