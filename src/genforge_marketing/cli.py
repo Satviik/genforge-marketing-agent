@@ -286,6 +286,32 @@ def radar_creative_breakdown(
     print("[yellow]Structure labels are heuristic; adapt mechanics only, not source content.[/yellow]")
 
 
+@radar_app.command("generate-creative")
+def radar_generate_creative(
+    product: str = typer.Option(..., "--product", help="Product name."),
+    description: str = typer.Option("", "--description", help="Product description or benefit."),
+    objective: str = typer.Option("awareness", "--objective", help="Campaign objective."),
+    audience: str = typer.Option("people interested in custom 3D printed products", "--audience"),
+    platform: str = typer.Option("Instagram Reels", "--platform"),
+    duration: int = typer.Option(20, "--duration", min=8, max=90, help="Reel duration in seconds."),
+    brand_voice: str = typer.Option("creative, helpful, maker-focused", "--brand-voice"),
+    breakdown_file: Path | None = typer.Option(None, "--breakdown", exists=True, readable=True, dir_okay=False, help="Optional creative-breakdown JSON."),
+    output: Path = typer.Option(Path("output/original-reel-brief.json"), "--output", "-o"),
+) -> None:
+    """Generate an original, local creative brief from product details and optional reference mechanics."""
+    from genforge_marketing.intelligence.creative_generator import generate_original_reel
+    try:
+        breakdown = json.loads(breakdown_file.read_text(encoding="utf-8")) if breakdown_file else {}
+        brief = generate_original_reel(product, description, objective, audience, platform, duration, brand_voice, breakdown)
+    except (ValueError, OSError) as exc:
+        raise typer.BadParameter(f"Could not generate creative brief: {exc}") from exc
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(brief, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    print(f"[green]Original creative brief saved:[/green] {output}")
+    print(f"Scenes: {len(brief['production_plan']['scenes'])} | Duration: {duration}s")
+    print("[yellow]Local deterministic draft only; review before production. No AI API was called.[/yellow]")
+
+
 @radar_app.command("visual-notes")
 def radar_visual_notes(
     media_file: Path = typer.Option(..., "--media", exists=True, readable=True, dir_okay=False, help="Media inspection JSON containing sampled frame references."),
