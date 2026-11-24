@@ -26,3 +26,9 @@ def test_rank_products_orders_and_discloses_limitations():
     assert result["ranked_products"][0]["candidate"]["name"] == strong.name
     assert result["ranked_products"][0]["score"] > result["ranked_products"][1]["score"]
     assert result["ranked_products"][0]["limitations"]
+
+
+def test_print_time_efficiency_influences_rank():
+    fast = ProductCandidate(name="Quick item", estimated_print_hours=1, demand_score=0.6, printability=0.7)
+    slow = ProductCandidate(name="Slow item", estimated_print_hours=20, demand_score=0.6, printability=0.7)
+    assert score_product(fast)["components"]["print_time_efficiency"] > score_product(slow)["components"]["print_time_efficiency"]
