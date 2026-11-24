@@ -390,3 +390,10 @@ Record a reviewer decision in the campaign manifest:
 genforge-marketing radar campaign-review-decision --campaign campaigns/bookmark-launch --reviewer "Reviewer Name" --decision approved --notes "Approved for production"
 ```
 Approval is gated on campaign readiness. Supported decisions: `approved`, `changes_requested`, `rejected`. This does not publish content. See [Campaign Review Decision](docs/CAMPAIGN_REVIEW_DECISION.md).
+
+## Production handoff (approval-gated)
+
+```bash
+genforge-marketing radar campaign-production-handoff --campaign campaigns/bookmark-launch
+```
+Creates a handoff folder containing the brief, storyboard, checklist and manifest only when an explicit approval is recorded. It does not start production or publish. See [Production Handoff](docs/CAMPAIGN_PRODUCTION_HANDOFF.md).`;
