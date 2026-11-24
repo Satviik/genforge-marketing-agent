@@ -44,6 +44,10 @@ def campaign_dashboard(campaign_path: str | Path) -> dict[str, Any]:
     else:
         readiness = "needs_review"
 
+    handoff_dir = path.parent / "production" / "handoff"
+    handoff_manifest = handoff_dir / "handoff.json"
+    handoff_status = "created" if handoff_manifest.is_file() else "not_created"
+
     return {
         "campaign_id": campaign.get("campaign_id"),
         "campaign_name": campaign.get("campaign_name"),
@@ -60,6 +64,12 @@ def campaign_dashboard(campaign_path: str | Path) -> dict[str, Any]:
             "found": audit["existing_count"],
             "missing": audit["missing_count"],
             "missing_paths": [item["path"] for item in audit["missing"]],
+        },
+        "production_handoff": {
+            "status": handoff_status,
+            "manifest_path": str(handoff_manifest.relative_to(path.parent)),
+            "production_started": False if handoff_status == "created" else None,
+            "publishing_enabled": False,
         },
         "quality_summary": {
             "passed": gate["passed"],
