@@ -435,6 +435,23 @@ def radar_experiment_report(
     print("[yellow]Descriptive results only; no causal or statistical significance claims.[/yellow]")
 
 
+@radar_app.command("campaign-init")
+def radar_campaign_init(
+    name: str = typer.Option(..., "--name"),
+    product: str = typer.Option(..., "--product"),
+    objective: str = typer.Option("awareness", "--objective"),
+    platform: str = typer.Option("Instagram Reels", "--platform"),
+    audience: str = typer.Option("", "--audience"),
+    root: Path = typer.Option(Path("campaigns"), "--root"),
+) -> None:
+    """Create a local campaign workspace and starter experiment."""
+    from genforge_marketing.intelligence.campaign_workspace import create_campaign_workspace
+    result = create_campaign_workspace(root, name, product, objective, platform, audience)
+    print(f"[green]Campaign workspace created:[/green] {result['workspace']}")
+    print(f"Folders: {', '.join(result['folders'])}")
+    print("[yellow]Workspace initialized locally; no external APIs called.[/yellow]")
+
+
 @radar_app.command("visual-notes")
 def radar_visual_notes(
     media_file: Path = typer.Option(..., "--media", exists=True, readable=True, dir_okay=False, help="Media inspection JSON containing sampled frame references."),
