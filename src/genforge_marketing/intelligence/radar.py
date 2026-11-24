@@ -143,12 +143,12 @@ def summarize_creative_patterns(references: list[dict[str, Any]]) -> dict[str, A
     from collections import Counter
 
     fields = {
-        "hook_types": [],
-        "payoff_types": [],
-        "visual_patterns": [],
-        "editing_patterns": [],
-        "psychological_triggers": [],
-        "adaptable_principles": [],
+        "hook_types": "hook_type",
+        "payoff_types": "payoff_type",
+        "visual_patterns": "visual_patterns",
+        "editing_patterns": "editing_patterns",
+        "psychological_triggers": "psychological_triggers",
+        "adaptable_principles": "adaptable_principles",
     }
     counters = {key: Counter() for key in fields}
     for row in references:
