@@ -19,3 +19,16 @@ def test_empty_artifact_list_audits_cleanly(tmp_path):
     report = audit_artifacts(tmp_path / "campaign")
     assert report["checked_count"] == 0
     assert report["missing_count"] == 0
+
+def test_artifact_audit_rejects_parent_traversal(tmp_path):
+    create_campaign_workspace(tmp_path, "Campaign", "Product")
+    folder = tmp_path / "campaign"
+    manifest = json.loads((folder / "campaign.json").read_text())
+    manifest["artifacts"] = {"brief": ["../outside.txt"]}
+    (folder / "campaign.json").write_text(json.dumps(manifest), encoding="utf-8")
+    try:
+        audit_artifacts(folder)
+    except ValueError as exc:
+        assert "stay inside" in str(exc)
+    else:
+        assert False, "expected path traversal rejection"
