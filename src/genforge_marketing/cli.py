@@ -632,7 +632,7 @@ def radar_campaign_dashboard(
 @radar_app.command("campaign-review-decision")
 def radar_campaign_review_decision(
     campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
-    reviewer: str = typer.Option(..., "--reviewer", min_length=1),
+    reviewer: str = typer.Option(..., "--reviewer"),
     decision: str = typer.Option(..., "--decision"),
     notes: str = typer.Option("", "--notes"),
 ) -> None:
