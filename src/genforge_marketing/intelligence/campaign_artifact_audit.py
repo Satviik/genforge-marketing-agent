@@ -17,7 +17,10 @@ def audit_artifacts(campaign_file: str | Path) -> dict[str, Any]:
             items = [items]
         for item in items:
             rel = str(item)
-            target = root / rel
+            relative_path = Path(rel)
+            if relative_path.is_absolute() or ".." in relative_path.parts:
+                raise ValueError(f"Artifact path must stay inside the campaign workspace: {rel}")
+            target = root / relative_path
             checks.append({"stage": stage, "path": rel, "exists": target.exists(), "is_file": target.is_file()})
     missing = [c for c in checks if not c["exists"]]
     return {"campaign_id": campaign.get("campaign_id"), "campaign_name": campaign.get("campaign_name"),
