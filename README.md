@@ -37,6 +37,16 @@ genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --po
 
 Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
 
+## Campaign dashboard
+
+View campaign progress, missing deliverables and quality checks in one report:
+
+```bash
+genforge-marketing radar campaign-dashboard --campaign campaigns/bookmark-launch --output output/campaign-dashboard.json
+```
+
+See [Campaign Dashboard](docs/CAMPAIGN_DASHBOARD.md). This is read-only.
+
 ## Campaign quality gate
 
 Validate campaign creative files before review:
