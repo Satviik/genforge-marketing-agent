@@ -37,6 +37,16 @@ genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --po
 
 Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
 
+## Reel storyboard
+
+Create a local HTML storyboard to review the timeline with timestamps and sampled frame images:
+
+```bash
+genforge-marketing radar storyboard --timeline output/reel-timeline.json --frames-dir output/frames --output output/reel-storyboard.html
+```
+
+Open the generated HTML file in a browser. See [Storyboard documentation](docs/STORYBOARD.md).
+
 ## Reel timeline reconstruction
 
 Combine sampled frames, detected scene changes, silence intervals and timestamped speech into one chronological JSON timeline:
