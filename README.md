@@ -98,3 +98,33 @@ genforge-marketing radar creative-patterns --store data/radar.sqlite --output ou
 ```
 
 This summarizes hook types, payoffs, visual patterns, editing patterns, psychological triggers, and adaptable principles by frequency. It counts supplied notes only; it does not infer causality or guarantee performance.
+
+
+## Product Radar (candidate screening)
+
+Rank product concepts using demand, printability, estimated material margin, personalization potential, and competition inputs:
+
+```shell
+genforge-marketing radar rank-products --input data/product-candidates.json --output output/product-radar.json
+```
+
+Example candidate input (JSON array):
+
+```json
+[{
+  "name": "Personalized desk organizer",
+  "trend": "#desksetup",
+  "concept": "Modular organizer with custom name plate",
+  "printability": 0.9,
+  "estimated_material_grams": 80,
+  "estimated_print_hours": 4.5,
+  "material_cost_per_gram": 1.8,
+  "selling_price": 399,
+  "personalization_score": 0.9,
+  "demand_score": 0.7,
+  "competition": "medium",
+  "evidence_notes": "Replace estimates with actual local data before ranking."
+}]
+```
+
+Material estimates exclude electricity, machine wear, failed prints, labor, packaging, delivery and fees. Scores are transparent heuristics, not market predictions.
