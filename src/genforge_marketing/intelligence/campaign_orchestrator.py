@@ -42,6 +42,10 @@ def update_stage(campaign_file: str | Path, stage: str, status: str, note: str =
         raise ValueError(f"Invalid stage status: {status}")
     path = Path(campaign_file)
     campaign = load_campaign(path)
+    if stage == "published" and status in {"in_progress", "completed"}:
+        review = campaign.get("review_record", {})
+        if review.get("decision") != "approved" or campaign.get("status") != "approved_for_production":
+            raise ValueError("Publishing is blocked until an explicit human review approval is recorded.")
     progress = campaign.setdefault("progress", {})
     progress[stage] = status
     if note:
