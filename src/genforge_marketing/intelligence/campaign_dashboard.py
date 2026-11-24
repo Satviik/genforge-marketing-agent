@@ -47,6 +47,13 @@ def campaign_dashboard(campaign_path: str | Path) -> dict[str, Any]:
     handoff_dir = path.parent / "production" / "handoff"
     handoff_manifest = handoff_dir / "handoff.json"
     handoff_status = "created" if handoff_manifest.is_file() else "not_created"
+    production_tracking = None
+    if handoff_manifest.is_file():
+        try:
+            handoff_data = __import__("json").loads(handoff_manifest.read_text(encoding="utf-8"))
+            production_tracking = handoff_data.get("production_tracking", {"status": "not_started"})
+        except (OSError, ValueError):
+            production_tracking = {"status": "unknown", "error": "Handoff manifest could not be read."}
 
     return {
         "campaign_id": campaign.get("campaign_id"),
@@ -70,6 +77,7 @@ def campaign_dashboard(campaign_path: str | Path) -> dict[str, Any]:
             "manifest_path": str(handoff_manifest.relative_to(path.parent)),
             "production_started": False if handoff_status == "created" else None,
             "publishing_enabled": False,
+            "tracking": production_tracking,
         },
         "quality_summary": {
             "passed": gate["passed"],
