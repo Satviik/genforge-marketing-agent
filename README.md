@@ -372,3 +372,13 @@ Reconstruct a short-form content blueprint from supplied observations and timest
 genforge-marketing radar autopsy --input data/reel-reference.json --output output/reel-autopsy.json
 ```
 This MVP does not download or inspect video, transcribe audio, or claim automated media analysis. It outputs a timeline, beat-role sequence, descriptive text statistics, evidence limitations, and a blank worksheet for adapting the mechanism into original GenForge content. See [Reel Autopsy docs](docs/REEL_AUTOPSY.md).
+
+## Campaign review packet
+
+Export an editable review packet combining campaign status, blockers, brief, storyboard and approval checklist:
+
+```bash
+genforge-marketing radar campaign-review-packet --campaign campaigns/bookmark-launch --output output/bookmark-review-packet.md
+```
+
+See [Campaign Review Packet](docs/CAMPAIGN_REVIEW_PACKET.md). Export is read-only and does not approve or publish.
