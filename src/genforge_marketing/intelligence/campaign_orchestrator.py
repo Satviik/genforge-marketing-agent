@@ -16,6 +16,23 @@ STAGES = [
     ("learning", "Learning review"),
 ]
 
+# Prerequisites must be completed or explicitly skipped before a stage can
+# advance. Human approval remains an additional gate for publishing.
+STAGE_PREREQUISITES = {
+    "research": (),
+    "analysis": ("research",),
+    "brief": ("analysis",),
+    "storyboard": ("brief",),
+    "production": ("storyboard",),
+    "review": ("production",),
+    "published": ("review",),
+    "metrics": ("published",),
+    "learning": ("metrics",),
+}
+
+ADVANCING_STATUSES = {"in_progress", "completed", "approved", "skipped"}
+SATISFIED_STATUSES = {"completed", "approved", "skipped"}
+
 def load_campaign(path: str | Path) -> dict[str, Any]:
     campaign_path = Path(path)
     if campaign_path.is_dir():
@@ -35,6 +52,21 @@ def status_report(campaign: dict[str, Any]) -> dict[str, Any]:
             next_stage = key
     return {"campaign_id": campaign.get("campaign_id"), "campaign_name": campaign.get("campaign_name"), "status": campaign.get("status", "planning"), "stages": rows, "next_stage": next_stage, "human_approval_required_for": ["review", "published"], "automated_publishing": False}
 
+def _validate_prerequisites(campaign: dict[str, Any], stage: str, status: str) -> None:
+    if status not in ADVANCING_STATUSES:
+        return
+    progress = campaign.get("progress", {})
+    missing = [
+        prerequisite
+        for prerequisite in STAGE_PREREQUISITES.get(stage, ())
+        if progress.get(prerequisite, "pending") not in SATISFIED_STATUSES
+    ]
+    if missing:
+        raise ValueError(
+            f"Cannot set campaign stage '{stage}' to '{status}'; "
+            f"prerequisite stage(s) not satisfied: {', '.join(missing)}."
+        )
+
 def update_stage(campaign_file: str | Path, stage: str, status: str, note: str = "") -> dict[str, Any]:
     if stage not in {key for key, _ in STAGES}:
         raise ValueError(f"Unknown campaign stage: {stage}")
@@ -42,6 +74,7 @@ def update_stage(campaign_file: str | Path, stage: str, status: str, note: str =
         raise ValueError(f"Invalid stage status: {status}")
     path = Path(campaign_file)
     campaign = load_campaign(path)
+    _validate_prerequisites(campaign, stage, status)
     if stage == "published" and status in {"in_progress", "completed"}:
         review = campaign.get("review_record", {})
         if review.get("decision") != "approved" or campaign.get("status") != "approved_for_production":
