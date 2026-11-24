@@ -136,3 +136,44 @@ def build_report(signals: list[TrendSignal]) -> dict[str, Any]:
         "recurring_note_patterns": sorted(patterns.items(), key=lambda item: item[1], reverse=True),
         "limitations": ["Fixture/manual signals only unless a live provider is configured.", "Single snapshots do not establish trend velocity.", "Scores are transparent heuristics, not performance predictions."],
     }
+
+
+def summarize_creative_patterns(references: list[dict[str, Any]]) -> dict[str, Any]:
+    """Aggregate recurring Creative DNA patterns from stored reference records."""
+    from collections import Counter
+
+    fields = {
+        "hook_types": [],
+        "payoff_types": [],
+        "visual_patterns": [],
+        "editing_patterns": [],
+        "psychological_triggers": [],
+        "adaptable_principles": [],
+    }
+    counters = {key: Counter() for key in fields}
+    for row in references:
+        ref = row.get("reference", row)
+        dna = ref.get("dna", {}) if isinstance(ref, dict) else {}
+        for key, field_name in fields.items():
+            value = dna.get(field_name)
+            if isinstance(value, str):
+                values = [value]
+            elif isinstance(value, list):
+                values = value
+            else:
+                values = []
+            for item in values:
+                if not isinstance(item, str):
+                    continue
+                normalized = item.strip()
+                if not normalized or normalized.casefold() == "unknown":
+                    continue
+                counters[key][normalized] += 1
+    return {
+        "reference_count": len(references),
+        "patterns": {
+            key: [{"pattern": pattern, "count": count} for pattern, count in counter.most_common()]
+            for key, counter in counters.items()
+        },
+        "note": "Frequency counts summarize supplied Creative DNA notes; they are not evidence of causality or guaranteed performance.",
+    }
