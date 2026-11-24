@@ -536,6 +536,22 @@ def radar_campaign_plan(
     print("[yellow]Planner is advisory only; no files or external actions were executed.[/yellow]")
 
 
+@radar_app.command("campaign-start-stage")
+def radar_campaign_start_stage(
+    campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
+    stage: str | None = typer.Option(None, "--stage"),
+) -> None:
+    """Create a non-destructive starter file for a campaign stage."""
+    from genforge_marketing.intelligence.campaign_stage_task import create_stage_task
+    try:
+        result = create_stage_task(campaign, stage)
+    except (ValueError, OSError) as exc:
+        raise typer.BadParameter(f"Cannot create campaign task: {exc}") from exc
+    print(f"[green]Starter file created:[/green] {result['path']}")
+    print(f"Stage: {result['stage']}")
+    print("[yellow]Manifest status was not changed; existing files are never overwritten.[/yellow]")
+
+
 @radar_app.command("visual-notes")
 def radar_visual_notes(
     media_file: Path = typer.Option(..., "--media", exists=True, readable=True, dir_okay=False, help="Media inspection JSON containing sampled frame references."),
