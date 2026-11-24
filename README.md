@@ -37,6 +37,16 @@ genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --po
 
 Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
 
+## Creative breakdown
+
+Combine the reconstructed timeline and optional manual frame observations into a reusable structure:
+
+```bash
+genforge-marketing radar creative-breakdown --timeline output/reel-timeline.json --visual-notes output/frame-visual-notes.json --output output/creative-breakdown.json
+```
+
+Outputs hook candidates, visual resets, process beats, pause/audio gaps, payoff candidates, and original-adaptation guidance. Labels are heuristic, not virality or retention claims. See [Creative Breakdown](docs/CREATIVE_BREAKDOWN.md).
+
 ## Frame visual notes
 
 Create an editable per-frame observation sheet for visual reverse-engineering:
