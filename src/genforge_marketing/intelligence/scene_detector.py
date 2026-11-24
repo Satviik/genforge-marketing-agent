@@ -9,8 +9,8 @@ from typing import Any
 
 from genforge_marketing.intelligence.media_inspector import MediaInspectionError
 
-PTS_RE = re.compile(r"pts_time:([0-9]+(?:\\.[0-9]+)?)")
-SCORE_RE = re.compile(r"lavfi\\.scene_score:([0-9]+(?:\\.[0-9]+)?)")
+PTS_RE = re.compile(r"pts_time:([0-9]+(?:\.[0-9]+)?)")
+SCORE_RE = re.compile(r"lavfi\.scene_score:([0-9]+(?:\.[0-9]+)?)")
 
 
 def detect_scene_changes(input_path: Path, threshold: float = 0.30) -> dict[str, Any]:
