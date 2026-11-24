@@ -37,6 +37,22 @@ genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --po
 
 Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
 
+## Local Reel audio transcription
+
+Optional, free local transcription (no paid API). Install the extra:
+
+```bash
+pip install -e ".[transcription]"
+```
+
+After extracting audio with `radar inspect-audio`, transcribe with timestamps:
+
+```bash
+genforge-marketing radar transcribe-audio --input output/reel-audio.wav --output output/transcription.json --model base --device cpu --language en
+```
+
+The first run downloads Whisper model weights. See [Media inspection](docs/MEDIA_INSPECTION.md) for details and limitations.
+
 ## Trend Radar — initial version
 
 The local-fixture Trend Radar scores trend signals transparently and stores creative references with structured Creative DNA notes. It does not yet connect to social platforms live or claim to analyze videos it cannot access.
