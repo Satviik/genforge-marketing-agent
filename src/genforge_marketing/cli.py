@@ -629,6 +629,23 @@ def radar_campaign_dashboard(
         print(f"[green]Dashboard JSON saved:[/green] {output}")
 
 
+@radar_app.command("campaign-review-packet")
+def radar_campaign_review_packet(
+    campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
+    output: Path = typer.Option(Path("output/campaign-review-packet.md"), "--output", "-o"),
+) -> None:
+    """Export a read-only campaign packet for human review."""
+    from genforge_marketing.intelligence.campaign_review_packet import export_campaign_review_packet
+    try:
+        report = export_campaign_review_packet(campaign, output)
+    except (ValueError, OSError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(f"Campaign review packet failed: {exc}") from exc
+    print(f"[bold cyan]Campaign:[/bold cyan] {report['campaign_name']}")
+    print(f"Readiness: {report['readiness']} | Blockers: {report['blocker_count']}")
+    print(f"[green]Review packet exported:[/green] {report['output_path']}")
+    print("This packet does not approve or publish content.")
+
+
 @radar_app.command("visual-notes")
 def radar_visual_notes(
     media_file: Path = typer.Option(..., "--media", exists=True, readable=True, dir_okay=False, help="Media inspection JSON containing sampled frame references."),
