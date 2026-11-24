@@ -64,3 +64,20 @@ genforge-marketing radar import-screening --input output/screening-export.json
 ```
 
 The import command validates the Screening Agent export through the shared integration adapter, ranks available snapshots, and writes a JSON report. It does not scrape new data or imply trend velocity from one snapshot.
+
+
+## Persistent trend history
+
+Record signals into a local SQLite history store from Python:
+
+```python
+from pathlib import Path
+from genforge_marketing.intelligence.radar import load_fixture
+from genforge_marketing.intelligence.trend_history import TrendHistoryStore
+store = TrendHistoryStore(Path("data/trend-history.sqlite"))
+for signal in load_fixture(Path("data/trend-radar-demo-fixture.json")):
+    signal_id = store.record(signal)
+    print(signal_id)
+```
+
+Compare stored observations with `genforge-marketing radar compare <signal-id>`. A comparison requires at least two snapshots at distinct times; reported velocity is descriptive change per day, not a prediction. SQLite is local and is not synchronized across machines.
