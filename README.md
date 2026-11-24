@@ -128,3 +128,8 @@ Example candidate input (JSON array):
 ```
 
 Material estimates exclude electricity, machine wear, failed prints, labor, packaging, delivery and fees. Scores are transparent heuristics, not market predictions.
+
+
+## Creative Intelligence — reverse-engineering content structure
+
+GenForge's Creative DNA library is designed to dissect **how** a Reel or post is constructed: first frame, hook, beat-by-beat timeline, retention devices, proof, payoff, CTA, carousel slide roles, caption structure, visual hierarchy, editing/audio patterns, and reusable principles. Study whole references and separate observation from hypothesis. Adapt mechanisms into original GenForge content rather than copying scripts or creators. See [Creative Intelligence methodology](docs/CREATIVE_INTELLIGENCE.md).
