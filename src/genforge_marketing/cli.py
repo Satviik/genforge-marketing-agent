@@ -235,6 +235,31 @@ def radar_inspect_audio(
     print("[yellow]Audio extracted and silence indexed; speech transcription was not performed.[/yellow]")
 
 
+@radar_app.command("transcribe-audio")
+def radar_transcribe_audio(
+    input_file: Path = typer.Option(..., "--input", exists=True, readable=True, dir_okay=False, help="Audio file, preferably the WAV from inspect-audio."),
+    output: Path = typer.Option(Path("output/transcription.json"), "--output", "-o"),
+    model_size: str = typer.Option("base", "--model", help="Whisper model size: tiny, base, small, medium, large-v3."),
+    device: str = typer.Option("cpu", "--device", help="cpu or cuda (requires compatible local setup)."),
+    compute_type: str = typer.Option("int8", "--compute-type", help="faster-whisper compute type."),
+    language: str | None = typer.Option(None, "--language", help="Optional language code, e.g. en or hi."),
+) -> None:
+    """Transcribe audio locally with the optional faster-whisper package."""
+    from genforge_marketing.intelligence.transcriber import TranscriptionError, transcribe_audio
+
+    try:
+        report = transcribe_audio(input_file, model_size, device, compute_type, language)
+    except (TranscriptionError, ValueError, FileNotFoundError) as exc:
+        print("[red]Transcription failed:[/red]", exc)
+        raise typer.Exit(code=1) from exc
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    print(f"[green]Transcription saved:[/green] {output}")
+    print(f"Language: {report.get('language') or 'unknown'}")
+    print(f"Segments: {len(report['segments'])}")
+    print("[yellow]Local speech transcription only; verify transcript accuracy before using it.[/yellow]")
+
+
 @radar_app.command("detect-scenes")
 def radar_detect_scenes(
     input_file: Path = typer.Option(..., "--input", exists=True, readable=True, dir_okay=False, help="Local video file."),
