@@ -26,8 +26,9 @@ def campaign_dashboard(campaign_path: str | Path) -> dict[str, Any]:
             "reason": "Declared campaign artifact does not exist.",
             "suggested_action": f"Create {item['path']} for the {item['stage']} stage.",
         })
+    review_items = [check for check in gate["checks"] if not check["passed"] and check.get("severity") == "warning"]
     for check in gate["checks"]:
-        if not check["passed"]:
+        if not check["passed"] and check.get("severity", "error") == "error":
             blockers.append({
                 "type": "quality_check",
                 "stage": "review",
@@ -50,6 +51,7 @@ def campaign_dashboard(campaign_path: str | Path) -> dict[str, Any]:
         "readiness": readiness,
         "blocker_count": len(blockers),
         "blockers": blockers,
+        "review_items": [{"check": item["name"], "reason": item["detail"], "required": True} for item in review_items],
         "next_stage": plan["next_stage"],
         "next_action": plan["next_action"],
         "stage_statuses": plan["stage_statuses"],
