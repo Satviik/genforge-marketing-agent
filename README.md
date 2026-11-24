@@ -133,3 +133,13 @@ Material estimates exclude electricity, machine wear, failed prints, labor, pack
 ## Creative Intelligence — reverse-engineering content structure
 
 GenForge's Creative DNA library is designed to dissect **how** a Reel or post is constructed: first frame, hook, beat-by-beat timeline, retention devices, proof, payoff, CTA, carousel slide roles, caption structure, visual hierarchy, editing/audio patterns, and reusable principles. Study whole references and separate observation from hypothesis. Adapt mechanisms into original GenForge content rather than copying scripts or creators. See [Creative Intelligence methodology](docs/CREATIVE_INTELLIGENCE.md).
+
+
+## Reel Autopsy (observations-first MVP)
+
+Reconstruct a short-form content blueprint from supplied observations and timestamped beats:
+
+```bash
+genforge-marketing radar autopsy --input data/reel-reference.json --output output/reel-autopsy.json
+```
+This MVP does not download or inspect video, transcribe audio, or claim automated media analysis. It outputs a timeline, beat-role sequence, descriptive text statistics, evidence limitations, and a blank worksheet for adapting the mechanism into original GenForge content. See [Reel Autopsy docs](docs/REEL_AUTOPSY.md).
