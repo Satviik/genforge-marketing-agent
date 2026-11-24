@@ -37,6 +37,16 @@ genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --po
 
 Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
 
+## Campaign creative pipeline
+
+Generate an original brief and storyboard directly into a campaign workspace:
+
+```bash
+genforge-marketing radar campaign-build-creative --campaign campaigns/bookmark-launch --duration 20
+```
+
+See [Campaign Creative Pipeline](docs/CAMPAIGN_PIPELINE.md). The command registers artifacts and sets the brief stage to `in_progress`; it never overwrites files.
+
 ## Campaign stage starter
 
 Create the next stage's editable starter file without overwriting existing work:
