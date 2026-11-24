@@ -629,6 +629,24 @@ def radar_campaign_dashboard(
         print(f"[green]Dashboard JSON saved:[/green] {output}")
 
 
+@radar_app.command("campaign-review-decision")
+def radar_campaign_review_decision(
+    campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
+    reviewer: str = typer.Option(..., "--reviewer", min_length=1),
+    decision: str = typer.Option(..., "--decision"),
+    notes: str = typer.Option("", "--notes"),
+) -> None:
+    """Record an explicit human campaign review decision."""
+    from genforge_marketing.intelligence.campaign_review_decision import record_campaign_review
+    try:
+        record = record_campaign_review(campaign, reviewer, decision, notes)
+    except (ValueError, OSError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(f"Campaign review decision failed: {exc}") from exc
+    print(f"[bold cyan]Decision:[/bold cyan] {record['decision']}")
+    print(f"Reviewer: {record['reviewer']} | Recorded at: {record['reviewed_at']}")
+    print("[yellow]Review decisions do not publish content.[/yellow]")
+
+
 @radar_app.command("campaign-review-packet")
 def radar_campaign_review_packet(
     campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
