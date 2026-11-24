@@ -210,6 +210,29 @@ def plan_month(
 
 
 
+@radar_app.command("autopsy")
+def radar_autopsy(
+    input_file: Path = typer.Option(..., "--input", exists=True, readable=True, dir_okay=False, help="JSON containing reference metadata and analyst-observed beats."),
+    output: Path = typer.Option(Path("output/reel-autopsy.json"), "--output", "-o"),
+) -> None:
+    """Reconstruct a Reel/post creative blueprint from supplied observations."""
+    from genforge_marketing.intelligence.reel_autopsy import ReferenceInput, build_autopsy
+
+    try:
+        reference = ReferenceInput.model_validate_json(input_file.read_text(encoding="utf-8"))
+        report = build_autopsy(reference)
+    except (ValueError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    print(f"[green]Autopsy report saved:[/green] {output}")
+    print(f"Reference: {reference.title}")
+    print(f"Observed beats: {len(report['timeline'])}")
+    print(f"Hook: {reference.hook_observation or 'not supplied'}")
+    print(f"Payoff: {reference.payoff_observation or 'not supplied'}")
+    print("[yellow]Evidence-aware reconstruction only; no media was automatically fetched or inspected.[/yellow]")
+
+
 @radar_app.command("compare")
 def radar_compare(
     signal_id: str = typer.Argument(..., help="Stable signal ID from a prior import."),
