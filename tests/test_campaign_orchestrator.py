@@ -19,3 +19,23 @@ def test_stage_update_validates_inputs(tmp_path):
         assert "Unknown campaign stage" in str(exc)
     else:
         assert False, "expected invalid stage to raise"
+
+def test_publishing_stage_requires_human_approval(tmp_path):
+    create_campaign_workspace(tmp_path, "Approval gate", "Product")
+    file=tmp_path/"approval-gate"/"campaign.json"
+    try:
+        update_stage(file, "published", "in_progress")
+    except ValueError as exc:
+        assert "human review approval" in str(exc)
+    else:
+        assert False, "publishing must be gated"
+
+def test_publishing_allowed_after_explicit_approval(tmp_path):
+    create_campaign_workspace(tmp_path, "Approval gate", "Product")
+    file=tmp_path/"approval-gate"/"campaign.json"
+    campaign=load_campaign(file)
+    campaign["status"]="approved_for_production"
+    campaign["review_record"]={"decision":"approved"}
+    file.write_text(__import__("json").dumps(campaign))
+    updated=update_stage(file, "published", "in_progress")
+    assert updated["progress"]["published"]=="in_progress"
