@@ -31,9 +31,21 @@ def test_missing_metrics_are_handled():
 
 def test_reference_store_round_trip(tmp_path):
     store = ReferenceStore(tmp_path / "radar.db")
-    reference = Reference(signal=signal(), dna=CreativeDNA(hook_type="before-after", confidence=0.8))
+    dna = CreativeDNA(
+        content_format="reel",
+        hook_type="before-after",
+        beat_map=["0-2s: final result", "2-5s: reveal process"],
+        retention_devices=["curiosity loop"],
+        cta_type="comment",
+        confidence=0.8,
+    )
+    reference = Reference(signal=signal(), dna=dna)
     ref_id = store.add(reference)
-    assert store.get(ref_id)["dna"]["hook_type"] == "before-after"
+    saved = store.get(ref_id)["dna"]
+    assert saved["hook_type"] == "before-after"
+    assert saved["beat_map"] == ["0-2s: final result", "2-5s: reveal process"]
+    assert saved["retention_devices"] == ["curiosity loop"]
+    assert saved["cta_type"] == "comment"
     assert store.list()[0]["id"] == ref_id
 
 
