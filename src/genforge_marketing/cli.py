@@ -210,6 +210,30 @@ def plan_month(
 
 
 
+@radar_app.command("inspect-media")
+def radar_inspect_media(
+    input_file: Path = typer.Option(..., "--input", exists=True, readable=True, dir_okay=False, help="Local video file."),
+    output: Path = typer.Option(Path("output/media-inspection.json"), "--output", "-o"),
+    frames_dir: Path = typer.Option(Path("output/media-frames"), "--frames-dir", help="Directory for sampled JPG frames."),
+    interval: float = typer.Option(2.0, "--interval", min=0.1, help="Seconds between sampled frames."),
+) -> None:
+    """Inspect local video metadata and sample frames; requires FFmpeg and FFprobe."""
+    from genforge_marketing.intelligence.media_inspector import MediaInspectionError, inspect_media
+
+    try:
+        report = inspect_media(input_file, frames_dir, interval)
+    except (MediaInspectionError, ValueError, FileNotFoundError) as exc:
+        print(f"[red]Media inspection failed:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    print(f"[green]Media inspection saved:[/green] {output}")
+    print(f"Duration: {report['metadata']['duration_seconds']:.2f}s")
+    print(f"Frames sampled: {report['sampling']['frame_count']}")
+    print(f"Frames directory: {frames_dir}")
+    print("[yellow]Frames are indexed only; no visual analysis or transcription was performed.[/yellow]")
+
+
 @radar_app.command("autopsy")
 def radar_autopsy(
     input_file: Path = typer.Option(..., "--input", exists=True, readable=True, dir_okay=False, help="JSON containing reference metadata and analyst-observed beats."),
