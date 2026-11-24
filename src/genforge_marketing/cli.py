@@ -531,7 +531,7 @@ def radar_campaign_plan(
         print("[yellow]Human approval is required for this stage.[/yellow]")
     if output:
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(json.dumps(plan, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+        output.write_text(json.dumps(plan, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         print(f"[green]Execution plan saved:[/green] {output}")
     print("[yellow]Planner is advisory only; no files or external actions were executed.[/yellow]")
 
