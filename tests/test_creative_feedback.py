@@ -21,3 +21,12 @@ def test_feedback_rejects_invalid_metrics(tmp_path):
         store.record("reel", "Instagram", {"views": -1})
     with pytest.raises(ValueError):
         store.record("reel", "Instagram", {"unknown_metric": 1})
+
+
+def test_aggregate_uses_latest_snapshot_per_creative(tmp_path):
+    store = CreativeFeedbackStore(tmp_path / "feedback.db")
+    store.record("reel-001", "Instagram", {"views": 100}, observed_at=datetime(2026, 1, 1, tzinfo=timezone.utc))
+    store.record("reel-001", "Instagram", {"views": 250}, observed_at=datetime(2026, 1, 2, tzinfo=timezone.utc))
+    report = store.report()
+    assert report["snapshot_count"] == 2
+    assert report["aggregate_latest_creatives"]["views"] == 250
