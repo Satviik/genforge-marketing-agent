@@ -37,6 +37,17 @@ genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --po
 
 Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
 
+## Campaign stage starter
+
+Create the next stage's editable starter file without overwriting existing work:
+
+```bash
+genforge-marketing radar campaign-start-stage --campaign campaigns/bookmark-launch
+genforge-marketing radar campaign-start-stage --campaign campaigns/bookmark-launch --stage brief
+```
+
+See [Campaign Stage Task](docs/CAMPAIGN_STAGE_TASK.md). This creates a template only and does not update campaign stage status.
+
 ## Campaign execution planner
 
 Get a deterministic next-step recommendation from campaign progress and missing declared deliverables:
