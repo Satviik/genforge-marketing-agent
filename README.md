@@ -413,3 +413,14 @@ genforge-marketing radar campaign-task-list --campaign campaigns/bookmark-launch
 genforge-marketing radar campaign-task-update --campaign campaigns/bookmark-launch --task-id task-001 --status in_progress --notes "Filming started"
 ```
 Production tasks require recorded approval and a handoff package. See [Production Tasks](docs/CAMPAIGN_PRODUCTION_TASKS.md).`;
+
+
+## Campaign asset tracking
+
+```bash
+genforge-marketing radar campaign-asset-add --campaign campaigns/bookmark-launch --file output/mockup.png --name "Product mockup" --type image
+genforge-marketing radar campaign-asset-list --campaign campaigns/bookmark-launch
+genforge-marketing radar campaign-asset-revise --campaign campaigns/bookmark-launch --asset-id asset-001 --file output/mockup-v2.png --notes "Corrected details"
+genforge-marketing radar campaign-asset-status --campaign campaigns/bookmark-launch --asset-id asset-001 --status approved
+```
+See [Campaign Asset Tracking](docs/CAMPAIGN_ASSET_TRACKING.md).
