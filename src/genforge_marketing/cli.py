@@ -225,7 +225,7 @@ def radar_inspect_audio(
     try:
         report = extract_audio_and_detect_silence(input_file, audio_output, noise_db, min_silence)
     except (MediaInspectionError, ValueError, FileNotFoundError) as exc:
-        print(f"[red]Audio inspection failed:[/red] {exc)
+        print("[red]Audio inspection failed:[/red]", exc)
         raise typer.Exit(code=1) from exc
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
