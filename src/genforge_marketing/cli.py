@@ -611,9 +611,17 @@ def radar_campaign_dashboard(
         raise typer.BadParameter(f"Campaign dashboard failed: {exc}") from exc
     print(f"[bold cyan]Campaign:[/bold cyan] {report['campaign_name']}")
     print(f"Status: {report['campaign_status']} | Next: {report['next_stage'] or 'complete'}")
+    print(f"Readiness: {report['readiness']} | Blockers: {report['blocker_count']}")
     print(f"Artifacts: {report['artifact_summary']['found']}/{report['artifact_summary']['checked']} found; {report['artifact_summary']['missing']} missing")
     print(f"Quality: {report['quality_summary']['passed']} passed; {report['quality_summary']['failed']} failed")
     print(f"Ready for human review: {report['quality_summary']['ready_for_human_review']}")
+    if report["blockers"]:
+        print("[bold yellow]Top blockers:[/bold yellow]")
+        for blocker in report["blockers"][:5]:
+            location = blocker.get("path") or blocker.get("check") or blocker.get("stage")
+            print(f" - {location}: {blocker['reason']} | Action: {blocker['suggested_action']}")
+        if report["blocker_count"] > 5:
+            print(f" ... and {report['blocker_count'] - 5} more (see JSON report)")
     print(report["recommendation"])
     if output:
         output.parent.mkdir(parents=True, exist_ok=True)
