@@ -244,7 +244,7 @@ def radar_import_screening(
         raise typer.BadParameter(str(exc)) from exc
 
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     table = Table(title=f"Screening import — {len(signals)} signals")
     table.add_column("Trend")
     table.add_column("Score", justify="right")
