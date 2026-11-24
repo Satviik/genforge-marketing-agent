@@ -384,6 +384,36 @@ def radar_creative_insights(
     print("[yellow]Exploratory comparisons only; results are not causal or statistically validated.[/yellow]")
 
 
+@radar_app.command("campaign-pack")
+def radar_campaign_pack(
+    product: str = typer.Option(..., "--product"),
+    description: str = typer.Option("", "--description"),
+    objective: str = typer.Option("awareness", "--objective"),
+    audience: str = typer.Option("people interested in custom 3D printed products", "--audience"),
+    platform: str = typer.Option("Instagram Reels", "--platform"),
+    duration: int = typer.Option(20, "--duration", min=8, max=90),
+    brand_voice: str = typer.Option("creative, helpful, maker-focused", "--brand-voice"),
+    breakdown_file: Path | None = typer.Option(None, "--breakdown", exists=True, readable=True, dir_okay=False),
+    timeline_file: Path | None = typer.Option(None, "--timeline", exists=True, readable=True, dir_okay=False),
+    visual_notes_file: Path | None = typer.Option(None, "--visual-notes", exists=True, readable=True, dir_okay=False),
+    brief_output: Path = typer.Option(Path("output/campaign-brief.json"), "--brief-output"),
+    handoff_output: Path = typer.Option(Path("output/claude-handoff.md"), "--handoff-output"),
+) -> None:
+    """Create both the original creative brief and Claude-ready handoff in one offline run."""
+    from genforge_marketing.intelligence.campaign_pack import build_campaign_pack, write_campaign_pack
+    try:
+        breakdown = json.loads(breakdown_file.read_text(encoding="utf-8")) if breakdown_file else None
+        timeline = json.loads(timeline_file.read_text(encoding="utf-8")) if timeline_file else None
+        visual_notes = json.loads(visual_notes_file.read_text(encoding="utf-8")) if visual_notes_file else None
+        pack = build_campaign_pack(product, description, objective, audience, platform, duration, brand_voice, breakdown, timeline, visual_notes)
+        brief_path, handoff_path = write_campaign_pack(pack, brief_output, handoff_output)
+    except (ValueError, OSError) as exc:
+        raise typer.BadParameter(f"Could not assemble campaign pack: {exc}") from exc
+    print(f"[green]Campaign brief:[/green] {brief_path}")
+    print(f"[green]Claude handoff:[/green] {handoff_path)
+    print("[yellow]Draft package assembled offline; review before production. No external model called.[/yellow]")
+
+
 @radar_app.command("visual-notes")
 def radar_visual_notes(
     media_file: Path = typer.Option(..., "--media", exists=True, readable=True, dir_okay=False, help="Media inspection JSON containing sampled frame references."),
