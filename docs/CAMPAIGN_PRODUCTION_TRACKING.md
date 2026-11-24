@@ -15,3 +15,6 @@ CLI usage:
 ```bash
 genforge-marketing radar campaign-production-status --campaign campaigns/bookmark-launch --status completed --notes "Draft exported"
 ```
+
+
+Production task CLI examples are documented in [Campaign Production Tasks](CAMPAIGN_PRODUCTION_TASKS.md).
