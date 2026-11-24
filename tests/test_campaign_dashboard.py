@@ -80,3 +80,16 @@ def test_dashboard_summarizes_production_tasks(tmp_path):
     assert result["production_handoff"]["tasks"] == {
         "count": 4, "completed": 1, "in_progress": 1, "blocked": 1, "todo": 1
     }
+
+
+def test_dashboard_summarizes_campaign_assets(tmp_path):
+    workspace=create_campaign_workspace(tmp_path,"Campaign","Product")["workspace"]
+    handoff=tmp_path/"campaign"/"production"/"handoff"
+    handoff.mkdir(parents=True)
+    (handoff/"handoff.json").write_text(json.dumps({"assets":[
+        {"status":"draft","revision":1},{"status":"approved","revision":3},{"status":"rejected","revision":2}
+    ]}),encoding="utf-8")
+    report=campaign_dashboard(workspace)
+    assert report["production_handoff"]["assets"] == {
+        "count":3,"draft":1,"review":0,"approved":1,"rejected":1,"revisions":6
+    }
