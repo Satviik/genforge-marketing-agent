@@ -265,6 +265,27 @@ def radar_reconstruct_timeline(
     print("[yellow]Timeline labels are evidence-based heuristics; verify hook, process, and payoff manually.[/yellow]")
 
 
+@radar_app.command("creative-breakdown")
+def radar_creative_breakdown(
+    timeline_file: Path = typer.Option(..., "--timeline", exists=True, readable=True, dir_okay=False),
+    visual_notes_file: Path | None = typer.Option(None, "--visual-notes", exists=True, readable=True, dir_okay=False),
+    output: Path = typer.Option(Path("output/creative-breakdown.json"), "--output", "-o),
+) -> None:
+    """Build a reusable creative structure report from timeline and optional frame notes."""
+    from genforge_marketing.intelligence.creative_breakdown import build_creative_breakdown
+    try:
+        timeline = json.loads(timeline_file.read_text(encoding="utf-8"))
+        notes = json.loads(visual_notes_file.read_text(encoding="utf-8")) if visual_notes_file else {}
+        report = build_creative_breakdown(timeline, notes)
+    except (ValueError, OSError) as exc:
+        raise typer.BadParameter(f"Could not build creative breakdown: {exc}") from exc
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    print(f"[green]Creative breakdown saved:[/green] {output}")
+    print(f"Phases: {len(report['phases'])} | Confidence: {report['confidence']}")
+    print("[yellow]Structure labels are heuristic; adapt mechanics only, not source content.[/yellow]")
+
+
 @radar_app.command("visual-notes")
 def radar_visual_notes(
     media_file: Path = typer.Option(..., "--media", exists=True, readable=True, dir_okay=False, help="Media inspection JSON containing sampled frame references."),
