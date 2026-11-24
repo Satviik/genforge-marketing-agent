@@ -209,6 +209,18 @@ def plan_month(
     print("[yellow]All items are drafts. Nothing has been published.[/yellow]")
 
 
+
+@radar_app.command("compare")
+def radar_compare(
+    signal_id: str = typer.Argument(..., help="Stable signal ID from a prior import."),
+    store: Path = typer.Option(Path("data/trend-history.sqlite"), "--store"),
+) -> None:
+    """Compare stored snapshots and report observed metric velocity."""
+    from genforge_marketing.intelligence.trend_history import TrendHistoryStore
+    result = TrendHistoryStore(store).compare(signal_id)
+    print(json.dumps(result, indent=2, ensure_ascii=False))
+
+
 if __name__ == "__main__":
     app()
 
