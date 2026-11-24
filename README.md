@@ -37,6 +37,16 @@ genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --po
 
 Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
 
+## Campaign quality gate
+
+Validate campaign creative files before review:
+
+```bash
+genforge-marketing radar campaign-quality-gate --campaign campaigns/bookmark-launch --output output/quality-gate.json
+```
+
+See [Campaign Quality Gate](docs/CAMPAIGN_QUALITY_GATE.md). Passing checks never auto-approve or publish.
+
 ## Campaign creative pipeline
 
 Generate an original brief and storyboard directly into a campaign workspace:
