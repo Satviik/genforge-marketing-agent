@@ -312,6 +312,24 @@ def radar_generate_creative(
     print("[yellow]Local deterministic draft only; review before production. No AI API was called.[/yellow]")
 
 
+@radar_app.command("export-claude")
+def radar_export_claude(
+    brief_file: Path = typer.Option(..., "--brief", exists=True, readable=True, dir_okay=False, help="Original creative brief JSON."),
+    breakdown_file: Path | None = typer.Option(None, "--breakdown", exists=True, readable=True, dir_okay=False),
+    timeline_file: Path | None = typer.Option(None, "--timeline", exists=True, readable=True, dir_okay=False),
+    visual_notes_file: Path | None = typer.Option(None, "--visual-notes", exists=True, readable=True, dir_okay=False),
+    output: Path = typer.Option(Path("output/claude-creative-handoff.md"), "--output", "-o"),
+) -> None:
+    """Export the creative brief and optional evidence reports as a Claude-ready Markdown package."""
+    from genforge_marketing.intelligence.claude_handoff import export_claude_package
+    try:
+        destination = export_claude_package(brief_file, output, breakdown_file, timeline_file, visual_notes_file)
+    except (ValueError, OSError) as exc:
+        raise typer.BadParameter(f"Could not export Claude handoff: {exc}") from exc
+    print(f"[green]Claude handoff package exported:[/green] {destination}")
+    print("[yellow]Review the Markdown package before sharing; this command calls no external model.[/yellow]")
+
+
 @radar_app.command("visual-notes")
 def radar_visual_notes(
     media_file: Path = typer.Option(..., "--media", exists=True, readable=True, dir_okay=False, help="Media inspection JSON containing sampled frame references."),
