@@ -30,9 +30,10 @@ def test_radar_import_screening_maps_metadata(tmp_path) -> None:
         }),
         encoding="utf-8",
     )
+    history_path = tmp_path / "trend-history.sqlite"
     result = CliRunner().invoke(
         app,
-        ["radar", "import-screening", "--input", str(export), "--output", str(output)],
+        ["radar", "import-screening", "--input", str(export), "--output", str(output), "--history-store", str(history_path)],
     )
     assert result.exit_code == 0, result.output
     report = json.loads(output.read_text(encoding="utf-8"))
@@ -46,6 +47,6 @@ def test_radar_import_screening_maps_metadata(tmp_path) -> None:
     assert history["recorded_snapshots"] == 1
     assert len(history["signal_ids"]) == 1
     from genforge_marketing.intelligence.trend_history import TrendHistoryStore
-    snapshots = TrendHistoryStore(tmp_path / "trend-history.sqlite").snapshots(history["signal_ids"][0])
+    snapshots = TrendHistoryStore(history_path).snapshots(history["signal_ids"][0])
     assert len(snapshots) == 1
     assert snapshots[0].views == 1500
