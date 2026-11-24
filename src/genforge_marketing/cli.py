@@ -552,6 +552,25 @@ def radar_campaign_start_stage(
     print("[yellow]Manifest status was not changed; existing files are never overwritten.[/yellow]")
 
 
+@radar_app.command("campaign-build-creative")
+def radar_campaign_build_creative(
+    campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
+    duration: int = typer.Option(20, "--duration", min=8, max=90),
+    brand_voice: str = typer.Option("creative, helpful, maker-focused", "--brand-voice"),
+) -> None:
+    """Generate and register an original brief and storyboard inside the campaign."""
+    from genforge_marketing.intelligence.campaign_pipeline import build_campaign_creative
+    try:
+        result = build_campaign_creative(campaign, duration, brand_voice)
+    except (ValueError, OSError) as exc:
+        raise typer.BadParameter(f"Campaign creative pipeline failed: {exc}") from exc
+    print(f"[green]Brief:[/green] {result['brief_path']}")
+    print(f"[green]Storyboard:[/green] {result['storyboard_path']}")
+    print(f"Scenes: {result['scene_count']} | Duration: {result['duration_seconds']}s")
+    print(f"Brief stage: {result['stage_status']}")
+    print("[yellow]Drafts only. Review before production. No AI API was called.[/yellow]")
+
+
 @radar_app.command("visual-notes")
 def radar_visual_notes(
     media_file: Path = typer.Option(..., "--media", exists=True, readable=True, dir_okay=False, help="Media inspection JSON containing sampled frame references."),
