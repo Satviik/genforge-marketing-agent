@@ -37,6 +37,17 @@ genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --po
 
 Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
 
+## Creative performance feedback
+
+Track manually entered results for published creatives and generate descriptive reports:
+
+```bash
+genforge-marketing radar feedback-log --creative-id reel-001 --platform Instagram --metrics output/reel-metrics.json --tags output/reel-tags.json
+genforge-marketing radar feedback-report --creative-id reel-001 --output output/feedback-report.json
+```
+
+Metrics can include views, reach, watch time, likes, comments, shares, saves, profile visits, inquiries, orders, and revenue. See [Creative Feedback](docs/CREATIVE_FEEDBACK.md). Reports are descriptive and do not infer causality.
+
 ## Claude handoff export
 
 Export the generated brief plus optional breakdown, timeline, and visual observations into a Markdown package for Claude:
