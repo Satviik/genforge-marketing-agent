@@ -48,10 +48,12 @@ def campaign_dashboard(campaign_path: str | Path) -> dict[str, Any]:
     handoff_manifest = handoff_dir / "handoff.json"
     handoff_status = "created" if handoff_manifest.is_file() else "not_created"
     production_tracking = None
+    production_tasks = []
     if handoff_manifest.is_file():
         try:
             handoff_data = __import__("json").loads(handoff_manifest.read_text(encoding="utf-8"))
             production_tracking = handoff_data.get("production_tracking", {"status": "not_started"})
+            production_tasks = handoff_data.get("production_tasks", [])
         except (OSError, ValueError):
             production_tracking = {"status": "unknown", "error": "Handoff manifest could not be read."}
 
@@ -78,6 +80,13 @@ def campaign_dashboard(campaign_path: str | Path) -> dict[str, Any]:
             "production_started": False if handoff_status == "created" else None,
             "publishing_enabled": False,
             "tracking": production_tracking,
+            "tasks": {
+                "count": len(production_tasks),
+                "completed": sum(1 for task in production_tasks if task.get("status") == "completed"),
+                "in_progress": sum(1 for task in production_tasks if task.get("status") == "in_progress"),
+                "blocked": sum(1 for task in production_tasks if task.get("status") == "blocked"),
+                "todo": sum(1 for task in production_tasks if task.get("status") == "todo"),
+            },
         },
         "quality_summary": {
             "passed": gate["passed"],
