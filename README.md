@@ -102,7 +102,7 @@ This summarizes hook types, payoffs, visual patterns, editing patterns, psycholo
 
 ## Product Radar (candidate screening)
 
-Rank product concepts using demand, printability, estimated material margin, personalization potential, and competition inputs:
+Rank product concepts using demand, printability, estimated material margin, personalization potential, competition, and print-time efficiency inputs:
 
 ```shell
 genforge-marketing radar rank-products --input data/product-candidates.json --output output/product-radar.json
