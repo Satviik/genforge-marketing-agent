@@ -216,7 +216,7 @@ if __name__ == "__main__":
 def radar_scan(
     fixture: Path = typer.Option(..., "--fixture", exists=True, readable=True, dir_okay=False, help="JSON array of TrendSignal records."),
     category: str = typer.Option("all", "--category"),
-    output: Path = typer.Option(Path("output/radar-report.json"), "--output", "-o),
+    output: Path = typer.Option(Path("output/radar-report.json"), "--output", "-o"),
 ) -> None:
     """Score and rank signals from a local fixture file."""
     signals = load_fixture(fixture)
