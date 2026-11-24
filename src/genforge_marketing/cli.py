@@ -384,8 +384,8 @@ def radar_creative_patterns(
     print(json.dumps(summary, indent=2, ensure_ascii=False))
     if output:
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
-        print(f"[green]Creative pattern summary saved:[/green] {output)
+        output.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        print(f"[green]Creative pattern summary saved:[/green] {output}")
 
 
 if __name__ == "__main__":
