@@ -37,6 +37,17 @@ genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --po
 
 Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
 
+## Campaign orchestrator
+
+Track progress and update campaign stages:
+
+```bash
+genforge-marketing radar campaign-status --campaign campaigns/bookmark-launch
+genforge-marketing radar campaign-stage --campaign campaigns/bookmark-launch/campaign.json --stage research --status completed --note "Research reviewed"
+```
+
+See [Campaign Orchestrator](docs/CAMPAIGN_ORCHESTRATOR.md). This tracks workflow status; it does not automatically publish.
+
 ## Campaign workspace
 
 Initialize a local folder structure for an individual campaign:
