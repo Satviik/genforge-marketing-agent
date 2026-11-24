@@ -16,8 +16,6 @@ STAGES = [
     ("learning", "Learning review"),
 ]
 
-# Prerequisites must be completed or explicitly skipped before a stage can
-# advance. Human approval remains an additional gate for publishing.
 STAGE_PREREQUISITES = {
     "research": (),
     "analysis": ("research",),
@@ -74,11 +72,11 @@ def update_stage(campaign_file: str | Path, stage: str, status: str, note: str =
         raise ValueError(f"Invalid stage status: {status}")
     path = Path(campaign_file)
     campaign = load_campaign(path)
-    _validate_prerequisites(campaign, stage, status)
     if stage == "published" and status in {"in_progress", "completed"}:
         review = campaign.get("review_record", {})
         if review.get("decision") != "approved" or campaign.get("status") != "approved_for_production":
             raise ValueError("Publishing is blocked until an explicit human review approval is recorded.")
+    _validate_prerequisites(campaign, stage, status)
     progress = campaign.setdefault("progress", {})
     progress[stage] = status
     if note:
