@@ -434,3 +434,8 @@ Run a read-only final audit to verify human approval, published/metrics/learning
 genforge-marketing radar campaign-completion --campaign campaigns/bookmark-launch --output output/completion.json
 ```
 The report identifies unresolved requirements; it does not automatically complete or publish campaigns. See [Campaign Completion](docs/CAMPAIGN_COMPLETION.md).
+
+
+### Publishing approval guard
+
+The campaign orchestrator refuses to move the `published` stage to `in_progress` or `completed` unless a recorded human review decision is `approved` and the campaign status is `approved_for_production`. Automated publishing is not enabled.
