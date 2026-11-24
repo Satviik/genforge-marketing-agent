@@ -23,3 +23,6 @@ The dashboard also reports `production_handoff.status` as `not_created` or `crea
 
 
 The dashboard reports production task totals by state (`todo`, `in_progress`, `completed`, `blocked`) when a handoff manifest exists.
+
+
+Dashboard asset summary includes count by review state and the sum of current asset revisions.
