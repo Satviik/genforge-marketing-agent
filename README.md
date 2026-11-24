@@ -37,6 +37,16 @@ genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --po
 
 Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
 
+## Creative insights
+
+Generate exploratory comparisons and follow-up test ideas from feedback reports:
+
+```bash
+genforge-marketing radar creative-insights --report output/creative-feedback-report.json --output output/creative-insights.json
+```
+
+This ranks observed metrics and suggests controlled experiments. It does not claim causality or statistical significance. See [Creative Insights](docs/CREATIVE_INSIGHTS.md).
+
 ## Creative performance feedback
 
 Track manually entered results for published creatives and generate descriptive reports:
