@@ -37,6 +37,16 @@ genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --po
 
 Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
 
+## Campaign pack (one-step workflow)
+
+Generate the original brief and Claude handoff together:
+
+```bash
+genforge-marketing radar campaign-pack --product "Custom bookmark" --description "Personalized gift" --objective inquiries --duration 20 --breakdown output/creative-breakdown.json --timeline output/reel-timeline.json --visual-notes output/frame-visual-notes.json --brief-output output/campaign-brief.json --handoff-output output/claude-handoff.md
+```
+
+Optional evidence files can be omitted. This assembles both outputs locally and calls no external model. See [Campaign Pack](docs/CAMPAIGN_PACK.md).
+
 ## Creative insights
 
 Generate exploratory comparisons and follow-up test ideas from feedback reports:
