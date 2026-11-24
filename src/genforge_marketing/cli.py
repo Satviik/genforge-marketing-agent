@@ -269,7 +269,7 @@ def radar_reconstruct_timeline(
 def radar_creative_breakdown(
     timeline_file: Path = typer.Option(..., "--timeline", exists=True, readable=True, dir_okay=False),
     visual_notes_file: Path | None = typer.Option(None, "--visual-notes", exists=True, readable=True, dir_okay=False),
-    output: Path = typer.Option(Path("output/creative-breakdown.json"), "--output", "-o),
+    output: Path = typer.Option(Path("output/creative-breakdown.json"), "--output", "-o"),
 ) -> None:
     """Build a reusable creative structure report from timeline and optional frame notes."""
     from genforge_marketing.intelligence.creative_breakdown import build_creative_breakdown
