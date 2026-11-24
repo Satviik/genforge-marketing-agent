@@ -37,6 +37,16 @@ genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --po
 
 Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
 
+## Claude handoff export
+
+Export the generated brief plus optional breakdown, timeline, and visual observations into a Markdown package for Claude:
+
+```bash
+genforge-marketing radar export-claude --brief output/original-reel-brief.json --breakdown output/creative-breakdown.json --timeline output/reel-timeline.json --visual-notes output/frame-visual-notes.json --output output/claude-creative-handoff.md
+```
+
+The export contains a structured production prompt, product/campaign context, creative plan, reference adaptation evidence, and originality/review guardrails. It does not call Claude or any paid model. See [Claude Handoff](docs/CLAUDE_HANDOFF.md).
+
 ## Original creative generator
 
 Generate a structured, original Reel brief locally from product details and optional reference mechanics:
