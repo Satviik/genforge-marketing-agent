@@ -53,3 +53,18 @@ genforge-marketing radar report --fixture data/trend-radar-demo-fixture.json
 ```
 
 Read [Trend Radar documentation](docs/TREND_RADAR.md) for input schema, scoring, reference-library commands, and limitations.
+
+
+## Screening Agent import
+
+Export collected trend candidates from the Screening Agent and import them into Trend Radar:
+
+```shell
+# In the gen-forge-screening-agent environment/repository
+genforge export --output output/screening-export.json
+
+# In the marketing-agent repository
+genforge-marketing radar import-screening --input output/screening-export.json
+```
+
+The import command validates the Screening Agent export through the shared integration adapter, ranks available snapshots, and writes a JSON report. It does not scrape new data or imply trend velocity from one snapshot.
