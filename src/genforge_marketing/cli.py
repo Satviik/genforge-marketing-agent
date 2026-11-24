@@ -439,7 +439,7 @@ def radar_rank_products(
                       f"{margin:.1%}" if margin is not None else "n/a")
     print(table)
     print(f"[green]Product Radar saved:[/green] {output}")
-    print("[yellow]Estimates are screening-level; verify costs and demand before production.[[/yellow]")
+    print("[yellow]Estimates are screening-level; verify costs and demand before production.[/yellow]")
 
 
 if __name__ == "__main__":
