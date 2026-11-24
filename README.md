@@ -37,6 +37,16 @@ genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --po
 
 Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
 
+## Creative experiments
+
+Compare variants from an experiment spec with latest feedback metrics:
+
+```bash
+genforge-marketing radar experiment-report --experiment experiments/hook-01.json --feedback output/creative-feedback-report.json --output output/hook-01-report.json
+```
+
+See [Creative Experiments](docs/CREATIVE_EXPERIMENTS.md). Results are descriptive and not causal.
+
 ## Campaign pack (one-step workflow)
 
 Generate the original brief and Claude handoff together:
