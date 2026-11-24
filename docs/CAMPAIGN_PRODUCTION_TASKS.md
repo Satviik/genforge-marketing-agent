@@ -9,3 +9,6 @@ genforge-marketing radar campaign-task-update --campaign campaigns/bookmark-laun
 ```
 
 Task states: `todo`, `in_progress`, `completed`, `blocked`. Tasks require a recorded approval and production handoff.
+
+
+Asset management CLI commands are documented in [Campaign Asset Tracking](CAMPAIGN_ASSET_TRACKING.md).
