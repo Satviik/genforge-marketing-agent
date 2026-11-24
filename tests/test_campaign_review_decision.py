@@ -31,3 +31,25 @@ def test_changes_requested_returns_campaign_for_revision(tmp_path):
     assert result["decision"]=="changes_requested"
     assert data["progress"]["review"]=="in_progress"
     assert data["status"]=="needs_changes"
+
+
+def test_rejection_is_recorded_without_publish_permission(tmp_path):
+    folder = create_campaign_workspace(tmp_path, "Campaign", "Product")["workspace"]
+    result = record_campaign_review(folder, "Reviewer", "rejected", "Not suitable.")
+    data = json.loads((Path(folder) / "campaign.json").read_text())
+    assert result["decision"] == "rejected"
+    assert data["progress"]["review"] == "blocked"
+    assert data["status"] == "rejected"
+    assert data["review_record"]["notes"] == "Not suitable."
+
+
+def test_invalid_decision_is_rejected(tmp_path):
+    folder = create_campaign_workspace(tmp_path, "Campaign", "Product")["workspace"]
+    with pytest.raises(ValueError, match="Decision must be one of"):
+        record_campaign_review(folder, "Reviewer", "maybe")
+
+
+def test_empty_reviewer_is_rejected(tmp_path):
+    folder = create_campaign_workspace(tmp_path, "Campaign", "Product")["workspace"]
+    with pytest.raises(ValueError, match="Reviewer name is required"):
+        record_campaign_review(folder, "   ", "changes_requested")
