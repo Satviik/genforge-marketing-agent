@@ -46,3 +46,8 @@ The engine estimates material cost and gross profit after material only when eno
 ## Creative DNA schema expansion
 
 Creative DNA now includes content format/objective, first frame and hook text, timestamped beat map, retention devices, proof, payoff, CTA type/text, caption and carousel structure, visual hierarchy, editing/audio patterns, comment prompts, and replication notes. Pattern summaries aggregate additional list/categorical fields. See [Creative Intelligence methodology](CREATIVE_INTELLIGENCE.md) for the reference-analysis protocol and production-brief workflow.
+
+
+## Reel Autopsy
+
+The `radar autopsy` command accepts source metadata and analyst-provided observations/beat timestamps, reconstructs a timeline and role sequence, and generates a blank original-adaptation worksheet. This is an observations-first MVP; it does not automatically download or inspect media. See [Reel Autopsy docs](REEL_AUTOPSY.md).
