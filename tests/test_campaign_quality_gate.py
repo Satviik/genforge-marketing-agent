@@ -11,7 +11,8 @@ def test_quality_gate_passes_generated_draft_except_review(tmp_path):
  assert report["failed"] >= 1
  assert report["approval_required"] is True
  assert report["automated_publish_allowed"] is False
- assert any(c["name"]=="human_review_recorded" and not c["passed"] for c in report["checks"])
+ assert any(c["name"]=="human_review_recorded" and not c["passed"] and c["severity"]=="warning" for c in report["checks"])
+ assert report["ready_for_human_review"] is True
 
 def test_gate_detects_missing_storyboard(tmp_path):
  create_campaign_workspace(tmp_path,"Campaign","Product")
