@@ -11,6 +11,7 @@ import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 from pydantic import BaseModel, Field, HttpUrl
 
@@ -87,7 +88,7 @@ class ReferenceStore:
 
     def add(self, reference: Reference) -> str:
         if not reference.id:
-            reference.id = reference.signal.url.host if reference.signal.url else f"ref-{reference.created_at.strftime('%Y%m%d%H%M%S')}"
+            reference.id = f"ref-{uuid4().hex[:12]}"
         score = score_signal(reference.signal)["score"]
         payload = reference.model_dump(mode="json")
         with sqlite3.connect(self.path) as db:
