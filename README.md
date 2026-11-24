@@ -145,6 +145,16 @@ genforge-marketing radar detect-scenes --input path/to/reel.mp4 --threshold 0.30
 
 This uses FFmpeg's scene filter. It identifies visual-change candidates, not semantic story beats, and can be sensitive to camera motion or flashes.
 
+### Audio extraction and silence detection
+
+Extract audio locally and find pause intervals:
+
+```bash
+genforge-marketing radar inspect-audio --input path/to/reel.mp4 --audio-output output/reel-audio.wav --output output/audio-inspection.json --noise-db -35 --min-silence 0.35
+```
+
+The command exports mono 16 kHz WAV and reports threshold-based silence intervals. It does not transcribe speech. Details: [Media inspection](docs/MEDIA_INSPECTION.md).
+
 ## Local Media Inspection (first automated media pipeline)
 
 Index a local video and sample frames without paid APIs:
