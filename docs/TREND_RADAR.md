@@ -1,0 +1,27 @@
+# Trend Radar (initial local-fixture version)
+
+Trend Radar provides a provider-neutral data model for trend signals, transparent scoring, reference storage, and report generation. This first iteration does **not** fetch Instagram/TikTok/YouTube data live.
+
+## Input fixture
+
+A JSON array of TrendSignal objects can be passed to `radar scan` or `radar report`. Fields include title, platform, URL, creator, publication/collection dates, view/like/comment/share/save counts, follower count, duration, category, notes, and completeness.
+
+## Score
+
+Signals are scored from available inputs. Engagement (35%), relative reach (25%), recency (20%), and completeness (20%) are normalized and missing metric components are excluded; remaining weights are renormalized. This is a heuristic rank—not a prediction of reach or virality. Single snapshots cannot establish growth velocity.
+
+## Creative reference library
+
+A reference combines a signal with a validated CreativeDNA record. The CLI stores these records in SQLite. Creative DNA is supplied as analysis notes; the command does not claim to have watched a URL or video.
+
+## Commands
+
+```shell
+genforge-marketing radar scan --fixture data/trend-fixture.json --category desk-setup
+genforge-marketing radar report --fixture data/trend-fixture.json
+genforge-marketing radar analyze-reference --signal data/reference-signal.json --dna data/reference-dna.json
+genforge-marketing radar references
+genforge-marketing radar references --show ref-id
+```
+
+JSON reports include ranked scores, component breakdown, confidence (the weight coverage available), and explicit limitations.
