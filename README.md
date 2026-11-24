@@ -135,6 +135,16 @@ Material estimates exclude electricity, machine wear, failed prints, labor, pack
 GenForge's Creative DNA library is designed to dissect **how** a Reel or post is constructed: first frame, hook, beat-by-beat timeline, retention devices, proof, payoff, CTA, carousel slide roles, caption structure, visual hierarchy, editing/audio patterns, and reusable principles. Study whole references and separate observation from hypothesis. Adapt mechanisms into original GenForge content rather than copying scripts or creators. See [Creative Intelligence methodology](docs/CREATIVE_INTELLIGENCE.md).
 
 
+### Scene-change detection
+
+Detect candidate visual changes and cut points locally:
+
+```bash
+genforge-marketing radar detect-scenes --input path/to/reel.mp4 --threshold 0.30 --output output/scene-changes.json
+```
+
+This uses FFmpeg's scene filter. It identifies visual-change candidates, not semantic story beats, and can be sensitive to camera motion or flashes.
+
 ## Local Media Inspection (first automated media pipeline)
 
 Index a local video and sample frames without paid APIs:
