@@ -33,18 +33,24 @@ def generate_original_reel(
         ("Payoff", "Reveal the finished product in a clean, satisfying hero shot; demonstrate its benefit."),
         ("CTA", "Invite a specific comment, customization request or DM aligned with the campaign goal."),
     ]
-    cuts = [0]
-    for weight in weights[:-1]:
-        cuts.append(cuts[-1] + max(1, round(duration_seconds * weight)))
-    # Enforce monotonic boundaries and fit the total duration.
-    cuts = [min(duration_seconds - 1, value) for value in cuts]
-    cuts = sorted(cuts)
+    # Allocate integer scene lengths using largest remainder, with at least 1s per beat.
+    raw_lengths = [duration_seconds * weight for weight in weights]
+    lengths = [max(1, int(value)) for value in raw_lengths]
+    while sum(lengths) > duration_seconds:
+        candidates = [i for i, value in enumerate(lengths) if value > 1]
+        if not candidates:
+            break
+        index = min(candidates, key=lambda i: raw_lengths[i] - int(raw_lengths[i]))
+        lengths[index] -= 1
+    while sum(lengths) < duration_seconds:
+        index = max(range(len(lengths)), key=lambda i: raw_lengths[i] - lengths[i])
+        lengths[index] += 1
     scenes = []
+    cursor = 0
     for idx, (label, direction) in enumerate(labels):
-        start = cuts[idx]
-        end = cuts[idx + 1] if idx + 1 < len(cuts) else duration_seconds
-        if end <= start:
-            end = min(duration_seconds, start + 1)
+        start = cursor
+        end = start + lengths[idx]
+        cursor = end
         scenes.append({
             "scene": idx + 1, "phase": label, "start_seconds": start, "end_seconds": end,
             "duration_seconds": end - start, "visual_direction": direction,
