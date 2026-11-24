@@ -84,7 +84,7 @@ def create_content(
         raise typer.BadParameter(str(exc)) from exc
 
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(drafts, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    output.write_text(json.dumps(drafts, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     table = Table(title="GenForge content studio")
     table.add_column("Format")
     table.add_column("Drafts", justify="right")
@@ -125,7 +125,7 @@ def strategy(
         raise typer.BadParameter(str(exc)) from exc
 
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(result.model_dump_json(indent=2) + "\\n", encoding="utf-8")
+    output.write_text(result.model_dump_json(indent=2) + "\n", encoding="utf-8")
     print(f"[bold cyan]{result.business_name} — {year}-{month:02d} strategy[/bold cyan]")
     print(provider_label)
     print(f"Primary goal: {result.primary_goal}")
@@ -154,7 +154,7 @@ def init_profile(
         raise typer.BadParameter(f"{output} already exists; choose another path to avoid overwriting.")
     output.parent.mkdir(parents=True, exist_ok=True)
     profile = BusinessProfile()
-    output.write_text(profile.model_dump_json(indent=2) + "\\n", encoding="utf-8")
+    output.write_text(profile.model_dump_json(indent=2) + "\n", encoding="utf-8")
     print(f"[green]Business profile template created:[/green] {output}")
     print("Edit the products, target audiences, brand voice and constraints before planning.")
 
@@ -196,7 +196,7 @@ def plan_month(
 
     workbook_path = export_monthly_plan(plan, output)
     json_path = output.with_suffix(".json")
-    json_path.write_text(plan.model_dump_json(indent=2) + "\\n", encoding="utf-8")
+    json_path.write_text(plan.model_dump_json(indent=2) + "\n", encoding="utf-8")
 
     table = Table(title=f"GenForge content plan — {year}-{month:02d}")
     table.add_column("Format")
@@ -224,7 +224,7 @@ def radar_scan(
         signals = [signal for signal in signals if signal.category == category]
     report = build_report(signals)
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     table = Table(title=f"Trend Radar — {len(signals)} signals")
     table.add_column("Signal")
     table.add_column("Score", justify="right")
@@ -290,5 +290,5 @@ def radar_report(
         sig = row["signal"]
         lines.extend([f"### {sig['title']}", f"- Platform: {sig['platform']}", f"- Category: {sig['category']}", f"- Score: {row['score']:.3f}", f"- Confidence: {row['confidence']:.2f}", f"- Notes: {sig.get('notes') or 'No notes supplied'}", f"- Source: {sig.get('url') or 'not provided'}", ""])
     lines.extend(["## Limitations", *[f"- {item}" for item in report["limitations"]]])
-    output.write_text("\\n".join(lines) + "\\n", encoding="utf-8")
+    output.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"[green]Markdown report saved:[/green] {output}")
