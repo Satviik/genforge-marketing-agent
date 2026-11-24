@@ -36,11 +36,12 @@ def estimate_gross_margin(candidate: ProductCandidate) -> float | None:
 def score_product(candidate: ProductCandidate) -> dict[str, Any]:
     """Score opportunity with available evidence; missing dimensions are excluded and weights renormalized."""
     weights = {
-        "demand": 0.30,
-        "printability": 0.25,
+        "demand": 0.25,
+        "printability": 0.20,
         "margin": 0.20,
         "personalization": 0.15,
         "competition": 0.10,
+        "print_time_efficiency": 0.10,
     }
     values: dict[str, float] = {"demand": candidate.demand_score, "printability": candidate.printability,
                                  "personalization": candidate.personalization_score}
@@ -49,6 +50,8 @@ def score_product(candidate: ProductCandidate) -> dict[str, Any]:
         values["margin"] = max(0.0, min(1.0, margin / 0.70))
     if candidate.competition != "unknown":
         values["competition"] = {"low": 1.0, "medium": 0.5, "high": 0.0}[candidate.competition]
+    if candidate.estimated_print_hours is not None:
+        values["print_time_efficiency"] = max(0.0, 1.0 - min(candidate.estimated_print_hours / 24.0, 1.0))
     total_weight = sum(weights[key] for key in values)
     score = sum(values[key] * weights[key] for key in values) / total_weight if total_weight else 0.0
     cost = estimate_material_cost(candidate)
