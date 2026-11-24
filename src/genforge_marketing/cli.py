@@ -235,6 +235,36 @@ def radar_inspect_audio(
     print("[yellow]Audio extracted and silence indexed; speech transcription was not performed.[/yellow]")
 
 
+@radar_app.command("reconstruct-timeline")
+def radar_reconstruct_timeline(
+    media_report: Path | None = typer.Option(None, "--media", help="JSON output from inspect-media."),
+    scene_report: Path | None = typer.Option(None, "--scenes", help="JSON output from detect-scenes."),
+    audio_report: Path | None = typer.Option(None, "--audio", help="JSON output from inspect-audio."),
+    transcript_report: Path | None = typer.Option(None, "--transcript", help="JSON output from transcribe-audio."),
+    output: Path = typer.Option(Path("output/reel-timeline.json"), "--output", "-o"),
+) -> None:
+    """Merge local frame, scene, silence and transcript reports into one timeline."""
+    sources = [media_report, scene_report, audio_report, transcript_report]
+    if not any(sources):
+        raise typer.BadParameter("Provide at least one source report using --media, --scenes, --audio, or --transcript.")
+    def load_json(path: Path | None) -> dict:
+        if path is None:
+            return {}
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except (ValueError, OSError) as exc:
+            raise typer.BadParameter(f"Cannot read JSON report {path}: {exc}") from exc
+    from genforge_marketing.intelligence.timeline_reconstruction import reconstruct_timeline
+    report = reconstruct_timeline(load_json(media_report), load_json(scene_report), load_json(audio_report), load_json(transcript_report))
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    print(f"[green]Reconstructed timeline saved:[/green] {output}")
+    print(f"Events: {report['event_count']}")
+    summary = report["evidence_summary"]
+    print(f"Frames: {summary['sampled_frames']} | Scene changes: {summary['scene_changes']} | Silences: {summary['silence_intervals']} | Transcript segments: {summary['transcript_segments']}")
+    print("[yellow]Timeline labels are evidence-based heuristics; verify hook, process, and payoff manually.[/yellow]")
+
+
 @radar_app.command("transcribe-audio")
 def radar_transcribe_audio(
     input_file: Path = typer.Option(..., "--input", exists=True, readable=True, dir_okay=False, help="Audio file, preferably the WAV from inspect-audio."),
