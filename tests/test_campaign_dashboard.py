@@ -29,3 +29,17 @@ def test_dashboard_blockers_include_missing_artifacts_and_quality_checks(tmp_pat
     assert "missing_artifact" in types
     assert "quality_check" in types
     assert any(item["path"] == "references/research-notes.md" for item in result["blockers"] if item["type"] == "missing_artifact")
+
+
+
+def test_dashboard_separates_human_review_from_blockers(tmp_path):
+    from genforge_marketing.intelligence.campaign_pipeline import build_campaign_creative
+
+    workspace = create_campaign_workspace(tmp_path, "Review Campaign", "Product")["workspace"]
+    build_campaign_creative(workspace)
+    result = campaign_dashboard(workspace)
+    assert result["readiness"] == "ready_for_human_review"
+    assert result["blocker_count"] == 0
+    assert any(item["check"] == "human_review_recorded" for item in result["review_items"])
+    assert result["human_approval_required"] is True
+    assert result["automated_publishing"] is False
