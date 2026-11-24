@@ -629,6 +629,62 @@ def radar_campaign_dashboard(
         print(f"[green]Dashboard JSON saved:[/green] {output}")
 
 
+@radar_app.command("campaign-task-add")
+def radar_campaign_task_add(
+    campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
+    title: str = typer.Option(..., "--title"),
+    description: str = typer.Option("", "--description"),
+    assignee: str = typer.Option("", "--assignee"),
+    priority: str = typer.Option("medium", "--priority"),
+    due_date: str = typer.Option("", "--due-date"),
+) -> None:
+    """Add a task to an approved production handoff."""
+    from genforge_marketing.intelligence.campaign_production_tasks import add_production_task
+    try:
+        task = add_production_task(campaign, title, description, assignee, priority, due_date)
+    except (ValueError, OSError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    print(f"[green]Task created:[/green] {task['task_id']} — {task['title']}")
+    print(f"Status: {task['status']} | Priority: {task['priority']} | Assignee: {task['assignee'] or 'unassigned'}")
+
+
+@radar_app.command("campaign-task-list")
+def radar_campaign_task_list(
+    campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
+) -> None:
+    """List production tasks for a campaign."""
+    from genforge_marketing.intelligence.campaign_production_tasks import list_production_tasks
+    try:
+        report = list_production_tasks(campaign)
+    except (ValueError, OSError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    table = Table(title=f"Production tasks ({report['count']})")
+    table.add_column("ID")
+    table.add_column("Task")
+    table.add_column("Status")
+    table.add_column("Priority")
+    table.add_column("Assignee")
+    for task in report["tasks"]:
+        table.add_row(task["task_id"], task["title"], task["status"], task["priority"], task["assignee"] or "—")
+    print(table)
+
+
+@radar_app.command("campaign-task-update")
+def radar_campaign_task_update(
+    campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
+    task_id: str = typer.Option(..., "--task-id"),
+    status: str = typer.Option(..., "--status"),
+    notes: str = typer.Option("", "--notes"),
+) -> None:
+    """Update a production task status."""
+    from genforge_marketing.intelligence.campaign_production_tasks import update_production_task
+    try:
+        task = update_production_task(campaign, task_id, status, notes)
+    except (ValueError, OSError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    print(f"[green]Updated:[/green] {task['task_id']} — {task['title']} ({task['status']})")
+
+
 @radar_app.command("campaign-production-status")
 def radar_campaign_production_status(
     campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
