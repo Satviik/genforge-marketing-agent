@@ -25,3 +25,13 @@ genforge-marketing radar references --show ref-id
 ```
 
 JSON reports include ranked scores, component breakdown, confidence (the weight coverage available), and explicit limitations.
+
+## Creative Intelligence pattern summary
+
+Summarize recurring Creative DNA across the reference library with:
+
+```shell
+genforge-marketing radar creative-patterns --store data/radar.sqlite --output output/creative-patterns.json
+```
+
+The summary ranks observed frequency for hook types, payoff types, visual patterns, editing patterns, psychological triggers, and adaptable principles. Counts are based on stored user/AI supplied analysis notes, not independent video analysis or performance causality.
