@@ -24,7 +24,7 @@ app = typer.Typer(help="GenForge marketing planning and operations.")
 radar_app = typer.Typer(help="Trend Radar and creative reference intelligence.")
 app.add_typer(radar_app, name="radar")
 
-from genforge_marketing.intelligence.radar import (\n    CreativeDNA, Reference, TrendSignal, ReferenceStore, build_report, load_fixture, score_signal\n)
+from genforge_marketing.intelligence.radar import CreativeDNA, Reference, TrendSignal, ReferenceStore, build_report, load_fixture, score_signal
 
 
 @app.command()
@@ -280,7 +280,7 @@ def radar_references(
 @radar_app.command("report")
 def radar_report(
     fixture: Path = typer.Option(..., "--fixture", exists=True, readable=True, dir_okay=False),
-    output: Path = typer.Option(Path("output/radar-report.md"), "--output", "-o),
+    output: Path = typer.Option(Path("output/radar-report.md"), "--output", "-o"),
 ) -> None:
     """Export a Markdown summary report from local fixture signals."""
     report = build_report(load_fixture(fixture))
