@@ -222,21 +222,42 @@ def radar_import_screening(
 
     try:
         batch = load_screening_export(input_file)
-        signals = [
-            TrendSignal(
-                title=item.topic,
-                platform=item.source,
-                url=item.source_url,
-                views=item.views,
-                likes=item.likes,
-                comments=item.comments,
-                category="screening-import",
-                notes=item.summary,
-                data_completeness=0.75 if item.source_url and item.observed_at else 0.5,
-                collected_at=item.observed_at,
+        signals = []
+        for item in batch.items:
+            raw = item.raw if isinstance(item.raw, dict) else {}
+            published_at = raw.get("published_at")
+            shares = raw.get("shares")
+            creator = raw.get("creator")
+            search_term = raw.get("search_term")
+            available = [
+                item.source,
+                item.source_url,
+                item.observed_at,
+                item.views,
+                item.likes,
+                item.comments,
+                shares,
+                creator,
+                published_at,
+            ]
+            completeness = sum(value not in (None, "") for value in available) / len(available)
+            signals.append(
+                TrendSignal(
+                    title=item.topic,
+                    platform=item.source,
+                    url=item.source_url,
+                    creator=creator,
+                    published_at=published_at,
+                    collected_at=item.observed_at,
+                    views=item.views,
+                    likes=item.likes,
+                    comments=item.comments,
+                    shares=shares,
+                    category=str(search_term or "screening-import"),
+                    notes=item.summary,
+                    data_completeness=round(completeness, 4),
+                )
             )
-            for item in batch.items
-        ]
         report = build_report(signals)
         report["source_agent"] = batch.source_agent
         report["source_file"] = str(input_file)
@@ -336,3 +357,6 @@ def radar_report(
     lines.extend(["## Limitations", *[f"- {item}" for item in report["limitations"]]])
     output.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"[green]Markdown report saved:[/green] {output}")
+
+if __name__ == "__main__":
+    app()
