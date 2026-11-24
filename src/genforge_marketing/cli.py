@@ -629,6 +629,23 @@ def radar_campaign_dashboard(
         print(f"[green]Dashboard JSON saved:[/green] {output}")
 
 
+@radar_app.command("campaign-production-status")
+def radar_campaign_production_status(
+    campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
+    status: str = typer.Option(..., "--status"),
+    notes: str = typer.Option("", "--notes"),
+) -> None:
+    """Update manual production status for an approved campaign."""
+    from genforge_marketing.intelligence.campaign_production_tracking import update_production_status
+    try:
+        report = update_production_status(campaign, status, notes)
+    except (ValueError, OSError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(f"Production status update failed: {exc}") from exc
+    print(f"[bold cyan]Production status:[/bold cyan] {report['status']}")
+    print(f"Updated: {report['updated_at']}")
+    print(f"Publishing enabled: {report['publishing_enabled']}")
+
+
 @radar_app.command("campaign-production-handoff")
 def radar_campaign_production_handoff(
     campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
