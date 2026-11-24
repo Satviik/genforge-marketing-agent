@@ -30,6 +30,6 @@ def write_campaign_pack(pack: dict[str, Any], brief_path: str | Path, handoff_pa
     brief_destination, handoff_destination = Path(brief_path), Path(handoff_path)
     brief_destination.parent.mkdir(parents=True, exist_ok=True)
     handoff_destination.parent.mkdir(parents=True, exist_ok=True)
-    brief_destination.write_text(json.dumps(pack["creative_brief"], indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    brief_destination.write_text(json.dumps(pack["creative_brief"], indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     handoff_destination.write_text(pack["claude_handoff_markdown"], encoding="utf-8")
     return brief_destination, handoff_destination
