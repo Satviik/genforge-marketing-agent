@@ -37,6 +37,16 @@ genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --po
 
 Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
 
+## Reel timeline reconstruction
+
+Combine sampled frames, detected scene changes, silence intervals and timestamped speech into one chronological JSON timeline:
+
+```bash
+genforge-marketing radar reconstruct-timeline --media output/media-inspection.json --scenes output/scene-changes.json --audio output/audio-inspection.json --transcript output/transcription.json --output output/reel-timeline.json
+```
+
+Each evidence source is optional, but provide at least one. Transcript role labels are simple heuristics and require review. See [Timeline reconstruction](docs/TIMELINE_RECONSTRUCTION.md).
+
 ## Local Reel audio transcription
 
 Optional, free local transcription (no paid API). Install the extra:
