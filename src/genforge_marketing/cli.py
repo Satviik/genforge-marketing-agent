@@ -629,6 +629,70 @@ def radar_campaign_dashboard(
         print(f"[green]Dashboard JSON saved:[/green] {output}")
 
 
+@radar_app.command("campaign-asset-add")
+def radar_campaign_asset_add(
+    campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
+    file: Path = typer.Option(..., "--file", exists=True, readable=True),
+    name: str = typer.Option("", "--name"),
+    type: str = typer.Option("other", "--type"),
+    notes: str = typer.Option("", "--notes"),
+) -> None:
+    """Add an asset file to an approved campaign."""
+    from genforge_marketing.intelligence.campaign_asset_tracker import add_campaign_asset
+    try:
+        asset = add_campaign_asset(campaign, file, name, type, notes)
+    except (ValueError, OSError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    print(f"[green]Asset added:[/green] {asset['asset_id']} — {asset['name']} (revision {asset['revision']})")
+
+
+@radar_app.command("campaign-asset-list")
+def radar_campaign_asset_list(campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True)) -> None:
+    """List assets tracked for a campaign."""
+    from genforge_marketing.intelligence.campaign_asset_tracker import list_campaign_assets
+    try:
+        report = list_campaign_assets(campaign)
+    except (ValueError, OSError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    table = Table(title=f"Campaign assets ({report['count"]})")
+    table.add_column("ID"); table.add_column("Name"); table.add_column("Type"); table.add_column("Status"); table.add_column("Revision")
+    for asset in report["assets"]:
+        table.add_row(asset["asset_id"], asset["name"], asset["type"], asset["status"], str(asset["revision"]))
+    print(table)
+
+
+@radar_app.command("campaign-asset-revise")
+def radar_campaign_asset_revise(
+    campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
+    asset_id: str = typer.Option(..., "--asset-id"),
+    file: Path = typer.Option(..., "--file", exists=True, readable=True),
+    notes: str = typer.Option("", "--notes"),
+) -> None:
+    """Add a new revision of a campaign asset."""
+    from genforge_marketing.intelligence.campaign_asset_tracker import revise_campaign_asset
+    try:
+        asset = revise_campaign_asset(campaign, asset_id, file, notes)
+    except (ValueError, OSError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    print(f"[green]Revision saved:[/green] {asset['asset_id']} revision {asset['revision']}")
+
+
+@radar_app.command("campaign-asset-status")
+def radar_campaign_asset_status(
+    campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
+    asset_id: str = typer.Option(..., "--asset-id"),
+    status: str = typer.Option(..., "--status"),
+    notes: str = typer.Option("", "--notes"),
+) -> None:
+    """Change asset review state."""
+    from genforge_marketing.intelligence.campaign_asset_tracker import set_campaign_asset_status
+    try:
+        asset = set_campaign_asset_status(campaign, asset_id, status, notes)
+    except (ValueError, OSError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    print(f"[green]Asset status:[/green] {asset['asset_id']} — {asset['status']}")
+
+
 @radar_app.command("campaign-task-add")
 def radar_campaign_task_add(
     campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
