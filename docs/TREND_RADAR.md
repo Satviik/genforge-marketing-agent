@@ -41,3 +41,8 @@ The summary ranks observed frequency for hook types, payoff types, visual patter
 Product candidates can be ranked with `radar rank-products --input candidates.json`. Each candidate supports concept, trend association, printability (0-1), material grams, print hours, material cost per gram, selling price, personalization (0-1), demand score (0-1), competition (low/medium/high/unknown), and evidence notes.
 
 The engine estimates material cost and gross profit after material only when enough inputs are present. It ranks candidates using weighted demand (25%), printability (20%), margin (20%), personalization (15%), competition (10%), and print-time efficiency (10%). Print-time efficiency is a simple 24-hour normalized heuristic. Missing margin or competition inputs are omitted and remaining weights are renormalized. These are screening scores, not market forecasts. Validate all assumptions before production.
+
+
+## Creative DNA schema expansion
+
+Creative DNA now includes content format/objective, first frame and hook text, timestamped beat map, retention devices, proof, payoff, CTA type/text, caption and carousel structure, visual hierarchy, editing/audio patterns, comment prompts, and replication notes. Pattern summaries aggregate additional list/categorical fields. See [Creative Intelligence methodology](CREATIVE_INTELLIGENCE.md) for the reference-analysis protocol and production-brief workflow.
