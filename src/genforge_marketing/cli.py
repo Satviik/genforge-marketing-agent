@@ -488,6 +488,27 @@ def radar_campaign_stage(
     print(f"[green]Updated[/green] {stage} → {status}")
 
 
+@radar_app.command("campaign-audit")
+def radar_campaign_audit(
+    campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
+) -> None:
+    """Check existence of campaign deliverables declared in campaign.json."""
+    from genforge_marketing.intelligence.campaign_artifact_audit import audit_artifacts
+    try:
+        report = audit_artifacts(campaign)
+    except (ValueError, OSError) as exc:
+        raise typer.BadParameter(f"Campaign audit failed: {exc}") from exc
+    table = Table(title=f"Campaign artifact audit: {report.get('campaign_name')}")
+    table.add_column("Stage")
+    table.add_column("Artifact")
+    table.add_column("Status")
+    for item in report["checks"]:
+        table.add_row(item["stage"], item["path"], "[green]Found[/green]" if item["exists"] else "[red]Missing[/red]")
+    print(table)
+    print(f"Checked: {report['checked_count']} | Found: {report['existing_count']} | Missing: {report['missing_count']}")
+    print("[yellow]This audit does not automatically mark stages complete.[/yellow]")
+
+
 @radar_app.command("visual-notes")
 def radar_visual_notes(
     media_file: Path = typer.Option(..., "--media", exists=True, readable=True, dir_okay=False, help="Media inspection JSON containing sampled frame references."),
