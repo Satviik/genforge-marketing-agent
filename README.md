@@ -135,6 +135,16 @@ Material estimates exclude electricity, machine wear, failed prints, labor, pack
 GenForge's Creative DNA library is designed to dissect **how** a Reel or post is constructed: first frame, hook, beat-by-beat timeline, retention devices, proof, payoff, CTA, carousel slide roles, caption structure, visual hierarchy, editing/audio patterns, and reusable principles. Study whole references and separate observation from hypothesis. Adapt mechanisms into original GenForge content rather than copying scripts or creators. See [Creative Intelligence methodology](docs/CREATIVE_INTELLIGENCE.md).
 
 
+## Local Media Inspection (first automated media pipeline)
+
+Index a local video and sample frames without paid APIs:
+
+```bash
+genforge-marketing radar inspect-media --input path/to/reel.mp4 --output output/media-inspection.json --frames-dir output/media-frames --interval 2
+```
+
+Requires FFmpeg and FFprobe installed locally. It produces metadata and timestamped frame files for later analysis, but does not yet interpret frames, extract/transcribe audio, or detect scene changes. See [Local Media Inspection](docs/MEDIA_INSPECTION.md).
+
 ## Reel Autopsy (observations-first MVP)
 
 Reconstruct a short-form content blueprint from supplied observations and timestamped beats:
