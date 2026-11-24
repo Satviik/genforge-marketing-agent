@@ -382,3 +382,11 @@ genforge-marketing radar campaign-review-packet --campaign campaigns/bookmark-la
 ```
 
 See [Campaign Review Packet](docs/CAMPAIGN_REVIEW_PACKET.md). Export is read-only and does not approve or publish.
+
+## Campaign review decision
+
+Record a reviewer decision in the campaign manifest:
+```bash
+genforge-marketing radar campaign-review-decision --campaign campaigns/bookmark-launch --reviewer "Reviewer Name" --decision approved --notes "Approved for production"
+```
+Approval is gated on campaign readiness. Supported decisions: `approved`, `changes_requested`, `rejected`. This does not publish content. See [Campaign Review Decision](docs/CAMPAIGN_REVIEW_DECISION.md).
