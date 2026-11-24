@@ -40,3 +40,16 @@ Do not connect this repository to `gen-forge-screening-agent` while the planning
 ## Safety
 
 Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
+
+## Trend Radar — initial version
+
+The local-fixture Trend Radar scores trend signals transparently and stores creative references with structured Creative DNA notes. It does not yet connect to social platforms live or claim to analyze videos it cannot access.
+
+Try the demo fixture:
+
+```shell
+genforge-marketing radar scan --fixture data/trend-radar-demo-fixture.json
+genforge-marketing radar report --fixture data/trend-radar-demo-fixture.json
+```
+
+Read [Trend Radar documentation](docs/TREND_RADAR.md) for input schema, scoring, reference-library commands, and limitations.
