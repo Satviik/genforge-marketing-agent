@@ -20,3 +20,6 @@ The report never marks stages complete, approves content, or publishes. Human ap
 
 
 The dashboard also reports `production_handoff.status` as `not_created` or `created`. When present, it reports that production has not been started and publishing remains disabled. This is a filesystem snapshot only.
+
+
+The dashboard reports production task totals by state (`todo`, `in_progress`, `completed`, `blocked`) when a handoff manifest exists.
