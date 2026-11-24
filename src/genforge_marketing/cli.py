@@ -654,7 +654,7 @@ def radar_campaign_asset_list(campaign: Path = typer.Option(..., "--campaign", e
         report = list_campaign_assets(campaign)
     except (ValueError, OSError, json.JSONDecodeError) as exc:
         raise typer.BadParameter(str(exc)) from exc
-    table = Table(title=f"Campaign assets ({report['count"]})")
+    table = Table(title=f"Campaign assets ({report['count']})")
     table.add_column("ID"); table.add_column("Name"); table.add_column("Type"); table.add_column("Status"); table.add_column("Revision")
     for asset in report["assets"]:
         table.add_row(asset["asset_id"], asset["name"], asset["type"], asset["status"], str(asset["revision"]))
