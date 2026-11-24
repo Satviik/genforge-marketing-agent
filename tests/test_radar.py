@@ -42,3 +42,21 @@ def test_report_ranks_and_discloses_limitations():
     assert report["count"] == 2
     assert len(report["ranked_signals"]) == 2
     assert report["limitations"]
+
+
+def test_creative_pattern_summary_aggregates_dna():
+    from genforge_marketing.intelligence.radar import summarize_creative_patterns
+
+    rows = [
+        {"reference": {"dna": {"hook_type": "before-after", " payoff_type": "transformation",
+            "visual_patterns": ["macro close-up", "macro close-up"], "editing_patterns": ["quick cuts"],
+            "psychological_triggers": ["curiosity"], "adaptable_principles": ["show process"]}}},
+        {"reference": {"dna": {"hook_type": "before-after", "payoff_type": "transformation",
+            "visual_patterns": ["macro close-up"], "editing_patterns": ["quick cuts"],
+            "psychological_triggers": ["curiosity"], "adaptable_principles": ["show process"]}}},
+    ]
+    summary = summarize_creative_patterns(rows)
+    assert summary["reference_count"] == 2
+    assert summary["patterns"]["hook_types"][0] == {"pattern": "before-after", "count": 2}
+    assert summary["patterns"]["visual_patterns"][0]["pattern"] == "macro close-up"
+    assert summary["patterns"]["visual_patterns"][0]["count"] == 3
