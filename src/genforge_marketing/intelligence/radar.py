@@ -36,14 +36,34 @@ class TrendSignal(BaseModel):
 
 
 class CreativeDNA(BaseModel):
+    """Structured content blueprint for dissecting high-performing posts and Reels.
+
+    Fields are observations supplied by an analyst or a future media-analysis adapter;
+    the schema itself does not claim to inspect source media.
+    """
+    content_format: str = "unknown"
+    objective: str = "unknown"
     hook_type: str = "unknown"
     opening_mechanism: str = ""
+    opening_frame: str = ""
+    hook_text: str = ""
     story_structure: list[str] = Field(default_factory=list)
+    beat_map: list[str] = Field(default_factory=list)
+    retention_devices: list[str] = Field(default_factory=list)
+    proof_type: str = ""
+    payoff_type: str = ""
+    cta_type: str = ""
+    cta_text: str = ""
+    caption_structure: list[str] = Field(default_factory=list)
+    carousel_slide_structure: list[str] = Field(default_factory=list)
+    visual_hierarchy: list[str] = Field(default_factory=list)
     visual_patterns: list[str] = Field(default_factory=list)
     editing_patterns: list[str] = Field(default_factory=list)
+    audio_patterns: list[str] = Field(default_factory=list)
     psychological_triggers: list[str] = Field(default_factory=list)
-    payoff_type: str = ""
+    comment_prompt: str = ""
     adaptable_principles: list[str] = Field(default_factory=list)
+    replication_notes: str = ""
     analysis_notes: str = ""
     confidence: float = Field(default=0.0, ge=0, le=1)
 
@@ -143,10 +163,19 @@ def summarize_creative_patterns(references: list[dict[str, Any]]) -> dict[str, A
     from collections import Counter
 
     fields = {
+        "content_formats": "content_format",
+        "objectives": "objective",
         "hook_types": "hook_type",
         "payoff_types": "payoff_type",
+        "cta_types": "cta_type",
+        "proof_types": "proof_type",
+        "retention_devices": "retention_devices",
+        "caption_structures": "caption_structure",
+        "carousel_slide_structures": "carousel_slide_structure",
+        "visual_hierarchy": "visual_hierarchy",
         "visual_patterns": "visual_patterns",
         "editing_patterns": "editing_patterns",
+        "audio_patterns": "audio_patterns",
         "psychological_triggers": "psychological_triggers",
         "adaptable_principles": "adaptable_principles",
     }
