@@ -372,5 +372,21 @@ def radar_report(
     output.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"[green]Markdown report saved:[/green] {output}")
 
+@radar_app.command("creative-patterns")
+def radar_creative_patterns(
+    store: Path = typer.Option(Path("data/radar.sqlite"), "--store"),
+    output: Path | None = typer.Option(None, "--output", "-o", help="Optional JSON output file."),
+) -> None:
+    """Summarize recurring Creative DNA patterns across saved references."""
+    from genforge_marketing.intelligence.radar import summarize_creative_patterns
+
+    summary = summarize_creative_patterns(ReferenceStore(store).list())
+    print(json.dumps(summary, indent=2, ensure_ascii=False))
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+        print(f"[green]Creative pattern summary saved:[/green] {output)
+
+
 if __name__ == "__main__":
     app()
