@@ -37,6 +37,16 @@ genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --po
 
 Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
 
+## Campaign execution planner
+
+Get a deterministic next-step recommendation from campaign progress and missing declared deliverables:
+
+```bash
+genforge-marketing radar campaign-plan --campaign campaigns/bookmark-launch --output output/campaign-plan.json
+```
+
+See [Campaign Execution Plan](docs/CAMPAIGN_EXECUTION_PLAN.md). It is advisory only and never runs production or publishing actions.
+
 ## Campaign artifact audit
 
 Declare expected deliverables in the campaign manifest under `artifacts`, then check them:
