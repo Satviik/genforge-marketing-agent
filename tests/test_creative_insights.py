@@ -9,6 +9,7 @@ def test_insights_rank_creatives_and_include_cautious_test_ideas():
     result = build_creative_insights(report)
     assert result["metric_summaries"]["share_rate"]["ranked"][0]["creative_id"] == "a"
     assert result["test_ideas"]
+    assert any(item["type"] == "metric_comparison" for item in result["recommendations"])
     assert "do not prove" in result["limitations"][1].lower()
 
 
