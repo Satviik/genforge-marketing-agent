@@ -404,3 +404,12 @@ Creates a handoff folder containing the brief, storyboard, checklist and manifes
 genforge-marketing radar campaign-production-status --campaign campaigns/bookmark-launch --status in_progress --notes "Filming started"
 ```
 States: `not_started`, `in_progress`, `completed`, `blocked`. Requires campaign approval and an existing handoff. Publishing remains disabled. See [Production Tracking](docs/CAMPAIGN_PRODUCTION_TRACKING.md).
+
+## Campaign production tasks
+
+```bash
+genforge-marketing radar campaign-task-add --campaign campaigns/bookmark-launch --title "Film product close-up" --assignee "Satvik" --priority high --due-date 2026-12-01
+genforge-marketing radar campaign-task-list --campaign campaigns/bookmark-launch
+genforge-marketing radar campaign-task-update --campaign campaigns/bookmark-launch --task-id task-001 --status in_progress --notes "Filming started"
+```
+Production tasks require recorded approval and a handoff package. See [Production Tasks](docs/CAMPAIGN_PRODUCTION_TASKS.md).`;
