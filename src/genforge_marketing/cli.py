@@ -330,6 +330,41 @@ def radar_export_claude(
     print("[yellow]Review the Markdown package before sharing; this command calls no external model.[/yellow]")
 
 
+@radar_app.command("feedback-log")
+def radar_feedback_log(
+    creative_id: str = typer.Option(..., "--creative-id"),
+    platform: str = typer.Option("Instagram", "--platform"),
+    metrics_file: Path = typer.Option(..., "--metrics", exists=True, readable=True, dir_okay=False, help="JSON object of metrics."),
+    tags_file: Path | None = typer.Option(None, "--tags", exists=True, readable=True, dir_okay=False, help="Optional JSON object of creative tags."),
+    store_path: Path = typer.Option(Path("data/creative-feedback.sqlite"), "--store"),
+) -> None:
+    """Record a manual performance snapshot for a creative."""
+    from genforge_marketing.intelligence.creative_feedback import CreativeFeedbackStore
+    try:
+        metrics = json.loads(metrics_file.read_text(encoding="utf-8"))
+        tags = json.loads(tags_file.read_text(encoding="utf-8")) if tags_file else {}
+        row_id = CreativeFeedbackStore(store_path).record(creative_id, platform, metrics, tags)
+    except (ValueError, OSError) as exc:
+        raise typer.BadParameter(f"Could not record feedback: {exc}") from exc
+    print(f"[green]Performance snapshot recorded:[/green] #{row_id} for {creative_id}")
+
+
+@radar_app.command("feedback-report")
+def radar_feedback_report(
+    creative_id: str | None = typer.Option(None, "--creative-id", help="Optional creative ID filter."),
+    store_path: Path = typer.Option(Path("data/creative-feedback.sqlite"), "--store"),
+    output: Path = typer.Option(Path("output/creative-feedback-report.json"), "--output", "-o"),
+) -> None:
+    """Summarize stored performance snapshots and descriptive rates."""
+    from genforge_marketing.intelligence.creative_feedback import CreativeFeedbackStore
+    report = CreativeFeedbackStore(store_path).report(creative_id)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    print(f"[green]Feedback report saved:[/green] {output}")
+    print(f"Creatives: {report['creative_count']} | Snapshots: {report['snapshot_count']}")
+    print("[yellow]Descriptive metrics only; use comparable post-age windows and avoid causal claims.[/yellow]")
+
+
 @radar_app.command("visual-notes")
 def radar_visual_notes(
     media_file: Path = typer.Option(..., "--media", exists=True, readable=True, dir_okay=False, help="Media inspection JSON containing sampled frame references."),
