@@ -43,3 +43,17 @@ def test_dashboard_separates_human_review_from_blockers(tmp_path):
     assert any(item["check"] == "human_review_recorded" for item in result["review_items"])
     assert result["human_approval_required"] is True
     assert result["automated_publishing"] is False
+
+
+
+def test_dashboard_reports_production_handoff_state(tmp_path):
+    workspace = create_campaign_workspace(tmp_path, "Campaign", "Product")["workspace"]
+    before = campaign_dashboard(workspace)
+    assert before["production_handoff"]["status"] == "not_created"
+    handoff = tmp_path / "campaign" / "production" / "handoff"
+    handoff.mkdir(parents=True)
+    (handoff / "handoff.json").write_text("{}", encoding="utf-8")
+    after = campaign_dashboard(workspace)
+    assert after["production_handoff"]["status"] == "created"
+    assert after["production_handoff"]["production_started"] is False
+    assert after["production_handoff"]["publishing_enabled"] is False
