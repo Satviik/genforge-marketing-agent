@@ -257,7 +257,7 @@ def radar_reconstruct_timeline(
     from genforge_marketing.intelligence.timeline_reconstruction import reconstruct_timeline
     report = reconstruct_timeline(load_json(media_report), load_json(scene_report), load_json(audio_report), load_json(transcript_report))
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"[green]Reconstructed timeline saved:[/green] {output}")
     print(f"Events: {report['event_count']}")
     summary = report["evidence_summary"]
@@ -280,7 +280,7 @@ def radar_creative_breakdown(
     except (ValueError, OSError) as exc:
         raise typer.BadParameter(f"Could not build creative breakdown: {exc}") from exc
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"[green]Creative breakdown saved:[/green] {output}")
     print(f"Phases: {len(report['phases'])} | Confidence: {report['confidence']}")
     print("[yellow]Structure labels are heuristic; adapt mechanics only, not source content.[/yellow]")
@@ -306,7 +306,7 @@ def radar_generate_creative(
     except (ValueError, OSError) as exc:
         raise typer.BadParameter(f"Could not generate creative brief: {exc}") from exc
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(brief, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    output.write_text(json.dumps(brief, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"[green]Original creative brief saved:[/green] {output}")
     print(f"Scenes: {len(brief['production_plan']['scenes'])} | Duration: {duration}s")
     print("[yellow]Local deterministic draft only; review before production. No AI API was called.[/yellow]")
@@ -359,7 +359,7 @@ def radar_feedback_report(
     from genforge_marketing.intelligence.creative_feedback import CreativeFeedbackStore
     report = CreativeFeedbackStore(store_path).report(creative_id)
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"[green]Feedback report saved:[/green] {output}")
     print(f"Creatives: {report['creative_count']} | Snapshots: {report['snapshot_count']}")
     print("[yellow]Descriptive metrics only; use comparable post-age windows and avoid causal claims.[/yellow]")
@@ -378,7 +378,7 @@ def radar_creative_insights(
     except (ValueError, OSError) as exc:
         raise typer.BadParameter(f"Could not build creative insights: {exc}") from exc
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(insights, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    output.write_text(json.dumps(insights, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"[green]Creative insights saved:[/green] {output}")
     print(f"Creatives analyzed: {insights['creative_count']} | Suggestions: {len(insights['recommendations'])}")
     print("[yellow]Exploratory comparisons only; results are not causal or statistically validated.[/yellow]")
@@ -427,7 +427,7 @@ def radar_visual_notes(
     except (ValueError, OSError) as exc:
         raise typer.BadParameter(f"Could not create frame notes: {exc}") from exc
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"[green]Frame notes template created:[/green] {output}")
     print(f"Frames to annotate: {len(report['frames'])}")
     print("[yellow]Fill observations manually; no visual AI analysis has been performed.[/yellow]")
@@ -471,7 +471,7 @@ def radar_transcribe_audio(
         print("[red]Transcription failed:[/red]", exc)
         raise typer.Exit(code=1) from exc
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"[green]Transcription saved:[/green] {output}")
     print(f"Language: {report.get('language') or 'unknown'}")
     print(f"Segments: {len(report['segments'])}")
@@ -494,7 +494,7 @@ def radar_detect_scenes(
         print(f"[red]Scene detection failed:[/red] {exc}")
         raise typer.Exit(code=1) from exc
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"[green]Scene-change report saved:[/green] {output}")
     print(f"Detected changes: {report['scene_change_count']}")
     print("[yellow]Visual change detection only; scene labels and narrative roles are not inferred.[/yellow]")
@@ -516,7 +516,7 @@ def radar_inspect_media(
         print(f"[red]Media inspection failed:[/red] {exc}")
         raise typer.Exit(code=1) from exc
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"[green]Media inspection saved:[/green] {output}")
     print(f"Duration: {report['metadata']['duration_seconds']:.2f}s")
     print(f"Frames sampled: {report['sampling']['frame_count']}")
@@ -538,7 +538,7 @@ def radar_autopsy(
     except (ValueError, json.JSONDecodeError) as exc:
         raise typer.BadParameter(str(exc)) from exc
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"[green]Autopsy report saved:[/green] {output}")
     print(f"Reference: {reference.title}")
     print(f"Observed beats: {len(report['timeline'])}")
