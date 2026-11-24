@@ -387,6 +387,37 @@ def radar_creative_patterns(
         output.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         print(f"[green]Creative pattern summary saved:[/green] {output}")
 
+@radar_app.command("rank-products")
+def radar_rank_products(
+    input_file: Path = typer.Option(..., "--input", exists=True, readable=True, dir_okay=False),
+    output: Path = typer.Option(Path("output/product-radar.json"), "--output", "-o"),
+) -> None:
+    """Rank product candidates using printability, demand, margin and competition inputs."""
+    from genforge_marketing.intelligence.product_radar import ProductCandidate, rank_products
+
+    try:
+        payload = json.loads(input_file.read_text(encoding="utf-8"))
+        candidates = [ProductCandidate.model_validate(item) for item in payload]
+        report = rank_products(candidates)
+    except (ValueError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    table = Table(title=f"Product Radar — {report['count']} candidates")
+    table.add_column("Product")
+    table.add_column("Score", justify="right")
+    table.add_column("Material cost", justify="right")
+    table.add_column("Margin", justify="right")
+    for row in report["ranked_products"][:20]:
+        cost = row["material_cost_estimate"]
+        margin = row["gross_margin_estimate"]
+        table.add_row(row["candidate"]["name"], f"{row['score']:.3f}",
+                      f"{cost:.2f}" if cost is not None else "n/a",
+                      f"{margin:.1%}" if margin is not None else "n/a")
+    print(table)
+    print(f"[green]Product Radar saved:[/green] {output}")
+    print("[yellow]Estimates are screening-level; verify costs and demand before production.[[/yellow]")
+
 
 if __name__ == "__main__":
     app()
