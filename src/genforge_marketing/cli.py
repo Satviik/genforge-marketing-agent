@@ -365,6 +365,25 @@ def radar_feedback_report(
     print("[yellow]Descriptive metrics only; use comparable post-age windows and avoid causal claims.[/yellow]")
 
 
+@radar_app.command("creative-insights")
+def radar_creative_insights(
+    report_file: Path = typer.Option(..., "--report", exists=True, readable=True, dir_okay=False, help="Creative feedback report JSON."),
+    output: Path = typer.Option(Path("output/creative-insights.json"), "--output", "-o"),
+) -> None:
+    """Generate exploratory creative insights and suggested controlled tests."""
+    from genforge_marketing.intelligence.creative_insights import build_creative_insights
+    try:
+        report = json.loads(report_file.read_text(encoding="utf-8"))
+        insights = build_creative_insights(report)
+    except (ValueError, OSError) as exc:
+        raise typer.BadParameter(f"Could not build creative insights: {exc}") from exc
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(insights, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    print(f"[green]Creative insights saved:[/green] {output}")
+    print(f"Creatives analyzed: {insights['creative_count']} | Suggestions: {len(insights['recommendations'])}")
+    print("[yellow]Exploratory comparisons only; results are not causal or statistically validated.[/yellow]")
+
+
 @radar_app.command("visual-notes")
 def radar_visual_notes(
     media_file: Path = typer.Option(..., "--media", exists=True, readable=True, dir_okay=False, help="Media inspection JSON containing sampled frame references."),
