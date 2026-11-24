@@ -19,7 +19,7 @@ def render_claude_package(
     production = brief.get("production_plan", {})
     adaptation = brief.get("reference_adaptation", {})
     def block(title: str, value: Any) -> str:
-        return "## " + title + "\n\n\`\`\`json\n" + json.dumps(value, indent=2, ensure_ascii=False) + "\n\`\`\`\n"
+        return "## " + title + "\n\n" + json.dumps(value, indent=2, ensure_ascii=False) + "\n"
     sections = [
         "# GenForge Creative Production Handoff",
         "**Status:** Draft — requires human review",
