@@ -76,7 +76,13 @@ class CreativeFeedbackStore:
                 "first_observed_at": first["observed_at"], "latest_observed_at": latest["observed_at"],
                 "latest_metrics": metrics, "rates": _rates(metrics), "tags": latest["tags"],
                 "limitations": ["Snapshots are user-entered; comparisons require similar observation windows.", "These descriptive metrics do not establish causal effects."]})
+        latest_metrics = [c["latest_metrics"] for c in creatives]
+        aggregate_latest = {
+            metric: round(sum((m.get(metric) or 0) for m in latest_metrics), 2)
+            if any(m.get(metric) is not None for m in latest_metrics) else None
+            for metric in METRICS
+        }
         return {"schema_version": 1, "report_type": "creative_performance_feedback", "creative_count": len(creatives),
             "snapshot_count": len(snapshots), "creatives": creatives,
-            "aggregate_observed": {metric: round(sum((s["metrics"].get(metric) or 0) for s in snapshots), 2) if any(s["metrics"].get(metric) is not None for s in snapshots) else None for metric in METRICS},
-            "limitations": ["Do not compare posts with different ages, audiences, spend, or formats as if conditions were controlled.", "Metrics are descriptive and cannot prove which creative mechanic caused performance."]}
+            "aggregate_latest_creatives": aggregate_latest,
+            "limitations": ["Aggregate totals use only each creative's latest snapshot to avoid double-counting repeated observations.", "Do not compare posts with different ages, audiences, spend, or formats as if conditions were controlled.", "Metrics are descriptive and cannot prove which creative mechanic caused performance."]}
