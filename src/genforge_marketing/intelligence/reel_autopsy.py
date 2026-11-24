@@ -91,6 +91,7 @@ def build_autopsy(reference: ReferenceInput) -> dict[str, Any]:
         "audio_notes": reference.audio_notes,
     }
     analysis = {
+        "beat_count": len(beats),
         "transcript_word_count": word_count,
         "question_marks_in_supplied_text": questions,
         "exclamation_marks_in_supplied_text": exclamations,
