@@ -22,6 +22,11 @@ class Settings(BaseSettings):
     screening_command: str = "genforge"
     screening_workdir: Path | None = None
     screening_timeout_seconds: int = 120
+    github_token: str | None = None
+    ai_provider: str = "none"
+    ai_api_key: str | None = None
+    ai_model: str | None = None
+    ai_base_url: str = "https://api.openai.com/v1"
 
 
 @lru_cache
