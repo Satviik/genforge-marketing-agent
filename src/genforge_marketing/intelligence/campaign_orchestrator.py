@@ -47,5 +47,5 @@ def update_stage(campaign_file: str | Path, stage: str, status: str, note: str =
     if note:
         campaign.setdefault("stage_notes", {})[stage] = note
     campaign.pop("_campaign_file", None)
-    path.write_text(json.dumps(campaign, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    path.write_text(json.dumps(campaign, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     return campaign
