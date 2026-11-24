@@ -57,3 +57,13 @@ def test_dashboard_reports_production_handoff_state(tmp_path):
     assert after["production_handoff"]["status"] == "created"
     assert after["production_handoff"]["production_started"] is False
     assert after["production_handoff"]["publishing_enabled"] is False
+
+
+def test_dashboard_reads_production_tracking_state(tmp_path):
+    workspace = create_campaign_workspace(tmp_path, "Campaign", "Product")["workspace"]
+    handoff = tmp_path / "campaign" / "production" / "handoff"
+    handoff.mkdir(parents=True)
+    (handoff / "handoff.json").write_text(json.dumps({"production_tracking": {"status": "in_progress", "notes": "Filming"}}), encoding="utf-8")
+    report = campaign_dashboard(workspace)
+    assert report["production_handoff"]["tracking"]["status"] == "in_progress"
+    assert report["production_handoff"]["publishing_enabled"] is False
