@@ -63,7 +63,14 @@ genforge export --output output/screening-export.json
 genforge-marketing radar import-screening --input output/screening-export.json
 ```
 
-The import command validates the Screening Agent export through the shared integration adapter, ranks available snapshots, and writes a JSON report. It does not scrape new data or imply trend velocity from one snapshot.
+The import command validates the Screening Agent export through the shared integration adapter, ranks available snapshots, writes a JSON report, and automatically records each imported signal in the local SQLite history store. The report includes stable signal IDs for future comparison. You can override the database path with `--history-store`.
+
+```shell
+genforge-marketing radar import-screening --input output/screening-export.json --history-store data/trend-history.sqlite
+genforge-marketing radar compare trend-<stable-id> --store data/trend-history.sqlite
+```
+
+Repeated imports create historical observations (same signal and observation timestamp replaces that row); trend velocity is available only after distinct observations and is descriptive, not predictive.
 
 
 ## Persistent trend history
