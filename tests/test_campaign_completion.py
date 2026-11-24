@@ -11,9 +11,8 @@ def test_incomplete_campaign_report_has_issues(tmp_path):
 
 def test_completed_campaign_report(tmp_path):
     workspace=create_campaign_workspace(tmp_path,"Final audit","Bookmark")["workspace"]
-    path=tmp_path/"final-audit"/"campaign.json"
-    path.parent.mkdir()
-    campaign=json.loads((__import__("pathlib").Path(workspace)/"campaign.json").read_text())
+    path=__import__("pathlib").Path(workspace)/"campaign.json"
+    campaign=json.loads(path.read_text())
     campaign["status"]="approved_for_production"
     campaign["review_record"]={"decision":"approved"}
     campaign["progress"]={"published":"completed","metrics":"completed","learning":"completed"}
