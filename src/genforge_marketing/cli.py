@@ -265,6 +265,25 @@ def radar_reconstruct_timeline(
     print("[yellow]Timeline labels are evidence-based heuristics; verify hook, process, and payoff manually.[/yellow]")
 
 
+@radar_app.command("visual-notes")
+def radar_visual_notes(
+    media_file: Path = typer.Option(..., "--media", exists=True, readable=True, dir_okay=False, help="Media inspection JSON containing sampled frame references."),
+    output: Path = typer.Option(Path("output/frame-visual-notes.json"), "--output", "-o"),
+) -> None:
+    """Create an editable frame-by-frame visual observation template."""
+    from genforge_marketing.intelligence.visual_notes import build_visual_notes_template
+    try:
+        media = json.loads(media_file.read_text(encoding="utf-8"))
+        report = build_visual_notes_template(media)
+    except (ValueError, OSError) as exc:
+        raise typer.BadParameter(f"Could not create frame notes: {exc}") from exc
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    print(f"[green]Frame notes template created:[/green] {output}")
+    print(f"Frames to annotate: {len(report['frames'])}")
+    print("[yellow]Fill observations manually; no visual AI analysis has been performed.[/yellow]")
+
+
 @radar_app.command("storyboard")
 def radar_storyboard(
     timeline_file: Path = typer.Option(..., "--timeline", exists=True, readable=True, dir_okay=False, help="Reconstructed timeline JSON."),
