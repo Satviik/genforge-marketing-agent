@@ -598,6 +598,29 @@ def radar_campaign_quality_gate(
         print(f"[green]Report saved:[/green] {output}")
 
 
+@radar_app.command("campaign-dashboard")
+def radar_campaign_dashboard(
+    campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
+    output: Path | None = typer.Option(None, "--output", "-o"),
+) -> None:
+    """Show unified read-only campaign status, artifacts and quality report."""
+    from genforge_marketing.intelligence.campaign_dashboard import campaign_dashboard
+    try:
+        report = campaign_dashboard(campaign)
+    except (ValueError, OSError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(f"Campaign dashboard failed: {exc}") from exc
+    print(f"[bold cyan]Campaign:[/bold cyan] {report['campaign_name']}")
+    print(f"Status: {report['campaign_status']} | Next: {report['next_stage'] or 'complete'}")
+    print(f"Artifacts: {report['artifact_summary']['found']}/{report['artifact_summary']['checked']} found; {report['artifact_summary']['missing']} missing")
+    print(f"Quality: {report['quality_summary']['passed']} passed; {report['quality_summary']['failed']} failed")
+    print(f"Ready for human review: {report['quality_summary']['ready_for_human_review']}")
+    print(report["recommendation"])
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+        print(f"[green]Dashboard JSON saved:[/green] {output")
+
+
 @radar_app.command("visual-notes")
 def radar_visual_notes(
     media_file: Path = typer.Option(..., "--media", exists=True, readable=True, dir_okay=False, help="Media inspection JSON containing sampled frame references."),
