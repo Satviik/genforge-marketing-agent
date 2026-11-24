@@ -30,10 +30,23 @@ genforge-marketing radar detect-scenes --input path/to/reel.mp4 --threshold 0.30
 
 Threshold ranges from 0 to 1; tune it for the footage. The report records timestamps and available scene scores. This is visual-change detection, not semantic scene understanding; motion, flashes, or camera changes can create false positives.
 
+## Audio extraction and silence detection
+
+Extract a local mono 16 kHz WAV and detect silence intervals:
+
+```bash
+genforge-marketing radar inspect-audio --input path/to/reel.mp4 --audio-output output/reel-audio.wav --output output/audio-inspection.json --noise-db -35 --min-silence 0.35
+```
+
+- `--noise-db`: silence threshold (default `-35` dB)
+- `--min-silence`: minimum silence duration (default `0.35` seconds)
+
+The output contains the extracted WAV path and approximate silence intervals. This can help spot pauses and pacing, but it does not transcribe speech, classify music, or infer creative intent. FFmpeg must be installed and available on `PATH`.
+
 ## Current limitations
 
 - No visual understanding/classification of extracted frames.
-- No audio extraction or speech transcription.
+- Audio can now be extracted and silence intervals detected, but speech transcription is not implemented.
 - Scene changes are visual-change candidates only; semantic labels and narrative roles still require interpretation.
 - Does not fetch media from social URLs.
 - Use media only when you have rights or permission to analyze it.
