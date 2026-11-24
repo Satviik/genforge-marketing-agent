@@ -509,6 +509,33 @@ def radar_campaign_audit(
     print("[yellow]This audit does not automatically mark stages complete.[/yellow]")
 
 
+@radar_app.command("campaign-plan")
+def radar_campaign_plan(
+    campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
+    output: Path | None = typer.Option(None, "--output", "-o"),
+) -> None:
+    """Plan the next campaign action from stage progress and artifact checks."""
+    from genforge_marketing.intelligence.campaign_execution_plan import campaign_plan
+    try:
+        plan = campaign_plan(campaign)
+    except (ValueError, OSError) as exc:
+        raise typer.BadParameter(f"Campaign planning failed: {exc}") from exc
+    print(f"[bold cyan]Campaign:[/bold cyan] {plan['campaign_name']}")
+    print(f"[bold]Next stage:[/bold] {plan['next_stage'] or 'complete'}")
+    print(plan["next_action"])
+    if plan["missing_artifacts_for_next_stage"]:
+        print("[yellow]Missing deliverables for this stage:[/yellow]")
+        for item in plan["missing_artifacts_for_next_stage"]:
+            print(f" • {item['path']}")
+    if plan["approval_required"]:
+        print("[yellow]Human approval is required for this stage.[/yellow]")
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(plan, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+        print(f"[green]Execution plan saved:[/green] {output}")
+    print("[yellow]Planner is advisory only; no files or external actions were executed.[/yellow]")
+
+
 @radar_app.command("visual-notes")
 def radar_visual_notes(
     media_file: Path = typer.Option(..., "--media", exists=True, readable=True, dir_okay=False, help="Media inspection JSON containing sampled frame references."),
