@@ -1,6 +1,6 @@
 # Local Media Inspection
 
-The `radar inspect-media` command begins the local media-analysis pipeline. It uses FFprobe to read basic video metadata and FFmpeg to sample still frames at a fixed interval. It does not use an external API.
+The local media pipeline uses FFprobe to read video metadata, FFmpeg to sample frames, and FFmpeg's scene filter to detect visual changes. It does not use an external API.
 
 ## Requirements
 
@@ -20,11 +20,21 @@ genforge-marketing radar inspect-media --input path/to/reel.mp4 --output output/
 
 The JSON includes duration, width/height, video frame rate, codec, approximate timestamps, and relative frame paths. Frame sampling is mechanical; timestamps are approximate and may not land on scene boundaries.
 
+## Scene-change detection
+
+Detect candidate cuts or visual changes:
+
+```bash
+genforge-marketing radar detect-scenes --input path/to/reel.mp4 --threshold 0.30 --output output/scene-changes.json
+```
+
+Threshold ranges from 0 to 1; tune it for the footage. The report records timestamps and available scene scores. This is visual-change detection, not semantic scene understanding; motion, flashes, or camera changes can create false positives.
+
 ## Current limitations
 
 - No visual understanding/classification of extracted frames.
 - No audio extraction or speech transcription.
-- No automatic scene-change detection yet.
+- Scene changes are visual-change candidates only; semantic labels and narrative roles still require interpretation.
 - Does not fetch media from social URLs.
 - Use media only when you have rights or permission to analyze it.
 - Sampled frames are evidence artifacts for later structural analysis; they are not labeled as hook, proof, payoff, or CTA automatically.
