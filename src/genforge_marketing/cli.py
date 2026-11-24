@@ -265,6 +265,26 @@ def radar_reconstruct_timeline(
     print("[yellow]Timeline labels are evidence-based heuristics; verify hook, process, and payoff manually.[/yellow]")
 
 
+@radar_app.command("storyboard")
+def radar_storyboard(
+    timeline_file: Path = typer.Option(..., "--timeline", exists=True, readable=True, dir_okay=False, help="Reconstructed timeline JSON."),
+    output: Path = typer.Option(Path("output/reel-storyboard.html"), "--output", "-o"),
+    frames_dir: Path | None = typer.Option(None, "--frames-dir", help="Directory containing sampled frame images."),
+) -> None:
+    """Render a standalone HTML storyboard for reviewing Reel structure."""
+    from genforge_marketing.intelligence.storyboard import write_storyboard
+    try:
+        report = json.loads(timeline_file.read_text(encoding="utf-8"))
+        destination = write_storyboard(report, output, frames_dir)
+    except (ValueError, OSError) as exc:
+        raise typer.BadParameter(f"Could not build storyboard: {exc}") from exc
+    summary = report.get("evidence_summary", {})
+    print(f"[green]Storyboard created:[/green] {destination}")
+    print(f"Events: {report.get('event_count', len(report.get('timeline', [])))}")
+    print(f"Frames: {summary.get('sampled_frames', 0)} | Scene changes: {summary.get('scene_changes', 0)} | Transcript segments: {summary.get('transcript_segments', 0)}")
+    print("[yellow]Open the HTML locally. Frame meaning and heuristic labels still require human review.[/yellow]")
+
+
 @radar_app.command("transcribe-audio")
 def radar_transcribe_audio(
     input_file: Path = typer.Option(..., "--input", exists=True, readable=True, dir_okay=False, help="Audio file, preferably the WAV from inspect-audio."),
