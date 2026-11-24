@@ -221,15 +221,13 @@ def radar_compare(
     print(json.dumps(result, indent=2, ensure_ascii=False))
 
 
-if __name__ == "__main__":
-    app()
-
 @radar_app.command("import-screening")
 def radar_import_screening(
     input_file: Path = typer.Option(..., "--input", exists=True, readable=True, dir_okay=False),
     output: Path = typer.Option(Path("output/screening-radar-report.json"), "--output", "-o"),
+    history_store: Path = typer.Option(Path("data/trend-history.sqlite"), "--history-store", help="SQLite file for automatic snapshot history."),
 ) -> None:
-    """Import a Screening Agent JSON export and rank its trend signals."""
+    """Import a Screening Agent JSON export, rank signals, and record history snapshots."""
     from genforge_marketing.integrations.screening_cli import load_screening_export, ScreeningCLIError
 
     try:
@@ -270,7 +268,11 @@ def radar_import_screening(
                     data_completeness=round(completeness, 4),
                 )
             )
+        from genforge_marketing.intelligence.trend_history import TrendHistoryStore
+        history = TrendHistoryStore(history_store)
+        history_ids = [history.record(signal) for signal in signals]
         report = build_report(signals)
+        report["history"] = {"store": str(history_store), "recorded_snapshots": len(history_ids), "signal_ids": history_ids}
         report["source_agent"] = batch.source_agent
         report["source_file"] = str(input_file)
     except (ScreeningCLIError, ValueError) as exc:
