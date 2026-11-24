@@ -424,3 +424,13 @@ genforge-marketing radar campaign-asset-revise --campaign campaigns/bookmark-lau
 genforge-marketing radar campaign-asset-status --campaign campaigns/bookmark-launch --asset-id asset-001 --status approved
 ```
 See [Campaign Asset Tracking](docs/CAMPAIGN_ASSET_TRACKING.md).
+
+
+## Campaign completion audit
+
+Run a read-only final audit to verify human approval, published/metrics/learning stages, completed production tasks, and approved assets:
+
+```bash
+genforge-marketing radar campaign-completion --campaign campaigns/bookmark-launch --output output/completion.json
+```
+The report identifies unresolved requirements; it does not automatically complete or publish campaigns. See [Campaign Completion](docs/CAMPAIGN_COMPLETION.md).
