@@ -414,6 +414,27 @@ def radar_campaign_pack(
     print("[yellow]Draft package assembled offline; review before production. No external model called.[/yellow]")
 
 
+@radar_app.command("experiment-report")
+def radar_experiment_report(
+    experiment_file: Path = typer.Option(..., "--experiment", exists=True, readable=True, dir_okay=False, help="Experiment specification JSON."),
+    feedback_file: Path = typer.Option(..., "--feedback", exists=True, readable=True, dir_okay=False, help="Creative feedback report JSON."),
+    output: Path = typer.Option(Path("output/experiment-report.json"), "--output", "-o"),
+) -> None:
+    """Compare declared experiment variants using recorded creative metrics."""
+    from genforge_marketing.intelligence.creative_experiments import compare_experiment
+    try:
+        experiment = json.loads(experiment_file.read_text(encoding="utf-8"))
+        feedback = json.loads(feedback_file.read_text(encoding="utf-8"))
+        report = compare_experiment(experiment, feedback)
+    except (ValueError, OSError) as exc:
+        raise typer.BadParameter(f"Could not compare experiment: {exc}") from exc
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(f"[green]Experiment comparison saved:[/green] {output}")
+    print(f"Experiment: {report.get('experiment_id') or 'unnamed'} | Variants: {len(report['variants'])}")
+    print("[yellow]Descriptive results only; no causal or statistical significance claims.[/yellow]")
+
+
 @radar_app.command("visual-notes")
 def radar_visual_notes(
     media_file: Path = typer.Option(..., "--media", exists=True, readable=True, dir_okay=False, help="Media inspection JSON containing sampled frame references."),
