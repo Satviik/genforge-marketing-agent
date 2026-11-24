@@ -43,10 +43,26 @@ genforge-marketing radar inspect-audio --input path/to/reel.mp4 --audio-output o
 
 The output contains the extracted WAV path and approximate silence intervals. This can help spot pauses and pacing, but it does not transcribe speech, classify music, or infer creative intent. FFmpeg must be installed and available on `PATH`.
 
+## Local speech transcription
+
+Install the optional transcription dependency (no paid API):
+
+```bash
+pip install -e ".[transcription]"
+```
+
+Transcribe the extracted WAV using a local Whisper model:
+
+```bash
+genforge-marketing radar transcribe-audio --input output/reel-audio.wav --output output/transcription.json --model base --device cpu --language en
+```
+
+Model weights are downloaded on first use and consume disk space. Model size controls accuracy/speed; `tiny` and `base` are lighter, while larger models need more resources. `--device cuda` is optional for compatible local CUDA setups. Output includes timestamped text segments and language detection. No paid API is used.
+
 ## Current limitations
 
 - No visual understanding/classification of extracted frames.
-- Audio can now be extracted and silence intervals detected, but speech transcription is not implemented.
+- Optional local speech transcription is implemented through faster-whisper; visual frame understanding remains unimplemented.
 - Scene changes are visual-change candidates only; semantic labels and narrative roles still require interpretation.
 - Does not fetch media from social URLs.
 - Use media only when you have rights or permission to analyze it.
