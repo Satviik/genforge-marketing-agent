@@ -37,6 +37,16 @@ genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --po
 
 Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
 
+## Campaign workspace
+
+Initialize a local folder structure for an individual campaign:
+
+```bash
+genforge-marketing radar campaign-init --name "Bookmark launch" --product "Custom bookmark" --objective inquiries --audience "book lovers" --root campaigns
+```
+
+Creates folders for references, observations, drafts, production, published records, metrics and experiments, with a campaign manifest and experiment template. See [Campaign Workspace](docs/CAMPAIGN_WORKSPACE.md).
+
 ## Creative experiments
 
 Compare variants from an experiment spec with latest feedback metrics:
