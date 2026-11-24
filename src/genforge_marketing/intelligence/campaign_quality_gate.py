@@ -46,6 +46,6 @@ def quality_gate(campaign_path: str | Path) -> dict[str,Any]:
  declared=[str(item) for group in artifacts.values() for item in (group if isinstance(group,list) else [group])]
  missing=[p for p in declared if not (root/Path(p)).exists()]
  checks.append(_check("declared_artifacts",not missing,"All declared artifacts exist." if not missing else "Missing declared artifacts: "+", ".join(missing)))
- checks.append(_check("human_review_recorded",campaign.get("progress",{}).get("review") in {"approved","completed"},"Human review recorded." if campaign.get("progress",{}).get("review") in {"approved","completed"} else "Human review is pending; gate remains advisory."))
+ checks.append(_check("human_review_recorded",campaign.get("progress",{}).get("review") in {"approved","completed"},"Human review recorded." if campaign.get("progress",{}).get("review") in {"approved","completed"} else "Human review is pending; gate remains advisory.",severity="warning"))
  passed=sum(1 for c in checks if c["passed"])
  return {"campaign_name":campaign.get("campaign_name"),"campaign_id":campaign.get("campaign_id"),"passed":passed,"failed":len(checks)-passed,"checks":checks,"ready_for_human_review":all(c["passed"] for c in checks if c["severity"]=="error"),"approval_required":True,"automated_publish_allowed":False,"note":"Quality checks are deterministic and advisory. Passing is not approval to publish."}
