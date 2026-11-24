@@ -17,3 +17,6 @@ It also exposes an actionable `blockers` list. Each entry identifies the blocker
 Human review is surfaced separately in `review_items`, not counted as a content blocker. A campaign can be ready for human review without being approved or publishable.
 
 The report never marks stages complete, approves content, or publishes. Human approval remains required and automated publishing is disabled.
+
+
+The dashboard also reports `production_handoff.status` as `not_created` or `created`. When present, it reports that production has not been started and publishing remains disabled. This is a filesystem snapshot only.
