@@ -31,9 +31,10 @@ def test_asset_validation_and_missing_asset(tmp_path):
     with pytest.raises(ValueError,match="Asset file not found"):
         add_campaign_asset(campaign,tmp_path/"missing.png")
     source=tmp_path/"asset.png";source.write_bytes(b"x")
-    with pytest.raises(ValueError,match="status"):
+    asset=add_campaign_asset(campaign,source)
+    with pytest.raises(ValueError,match="not found"):
         set_campaign_asset_status(campaign,"missing","approved")
     with pytest.raises(ValueError,match="one of"):
-        set_campaign_asset_status(campaign,"missing","wrong")
+        set_campaign_asset_status(campaign,asset["asset_id"],"wrong")
     with pytest.raises(ValueError,match="not found"):
         revise_campaign_asset(campaign,"missing",source)
