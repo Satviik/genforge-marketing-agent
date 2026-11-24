@@ -212,6 +212,50 @@ def plan_month(
 if __name__ == "__main__":
     app()
 
+@radar_app.command("import-screening")
+def radar_import_screening(
+    input_file: Path = typer.Option(..., "--input", exists=True, readable=True, dir_okay=False),
+    output: Path = typer.Option(Path("output/screening-radar-report.json"), "--output", "-o"),
+) -> None:
+    """Import a Screening Agent JSON export and rank its trend signals."""
+    from genforge_marketing.integrations.screening_cli import load_screening_export, ScreeningCLIError
+
+    try:
+        batch = load_screening_export(input_file)
+        signals = [
+            TrendSignal(
+                title=item.topic,
+                platform=item.source,
+                url=item.source_url,
+                views=item.views,
+                likes=item.likes,
+                comments=item.comments,
+                category="screening-import",
+                notes=item.summary,
+                data_completeness=0.75 if item.source_url and item.observed_at else 0.5,
+                collected_at=item.observed_at,
+            )
+            for item in batch.items
+        ]
+        report = build_report(signals)
+        report["source_agent"] = batch.source_agent
+        report["source_file"] = str(input_file)
+    except (ScreeningCLIError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    table = Table(title=f"Screening import — {len(signals)} signals")
+    table.add_column("Trend")
+    table.add_column("Score", justify="right")
+    table.add_column("Confidence", justify="right")
+    for row in report["ranked_signals"][:20]:
+        table.add_row(row["signal"]["title"], f"{row['score']:.3f}", f"{row['confidence']:.2f}")
+    print(table)
+    print(f"[green]Radar report saved:[/green] {output}")
+    print("[yellow]Imported metrics are source-provided snapshots; rankings are heuristic.[/yellow]")
+
+
 @radar_app.command("scan")
 def radar_scan(
     fixture: Path = typer.Option(..., "--fixture", exists=True, readable=True, dir_okay=False, help="JSON array of TrendSignal records."),
