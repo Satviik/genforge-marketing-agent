@@ -37,6 +37,16 @@ genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --po
 
 Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
 
+## Frame visual notes
+
+Create an editable per-frame observation sheet for visual reverse-engineering:
+
+```bash
+genforge-marketing radar visual-notes --media output/media-inspection.json --output output/frame-visual-notes.json
+```
+
+Annotate framing, angle, camera movement, subject, action, lighting, colors, text overlays, composition, transitions and a clearly labeled creative-purpose hypothesis. This is a manual template, not automated image understanding. See [Frame Visual Notes](docs/FRAME_VISUAL_NOTES.md).
+
 ## Reel storyboard
 
 Create a local HTML storyboard to review the timeline with timestamps and sampled frame images:
