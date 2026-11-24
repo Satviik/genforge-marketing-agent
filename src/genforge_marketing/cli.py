@@ -21,6 +21,10 @@ from genforge_marketing.strategy.llm import OpenAICompatibleStrategyProvider, St
 from genforge_marketing.workbook.exporter import export_monthly_plan
 
 app = typer.Typer(help="GenForge marketing planning and operations.")
+radar_app = typer.Typer(help="Trend Radar and creative reference intelligence.")
+app.add_typer(radar_app, name="radar")
+
+from genforge_marketing.intelligence.radar import (\n    CreativeDNA, Reference, TrendSignal, ReferenceStore, build_report, load_fixture, score_signal\n)
 
 
 @app.command()
@@ -207,3 +211,84 @@ def plan_month(
 
 if __name__ == "__main__":
     app()
+
+@radar_app.command("scan")
+def radar_scan(
+    fixture: Path = typer.Option(..., "--fixture", exists=True, readable=True, dir_okay=False, help="JSON array of TrendSignal records."),
+    category: str = typer.Option("all", "--category"),
+    output: Path = typer.Option(Path("output/radar-report.json"), "--output", "-o),
+) -> None:
+    """Score and rank signals from a local fixture file."""
+    signals = load_fixture(fixture)
+    if category != "all":
+        signals = [signal for signal in signals if signal.category == category]
+    report = build_report(signals)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    table = Table(title=f"Trend Radar — {len(signals)} signals")
+    table.add_column("Signal")
+    table.add_column("Score", justify="right")
+    table.add_column("Confidence", justify="right")
+    for row in report["ranked_signals"][:20]:
+        table.add_row(row["signal"]["title"], f"{row['score']:.3f}", f"{row['confidence']:.2f}")
+    print(table)
+    print(f"[green]Report saved:[/green] {output}")
+    print("[yellow]Heuristic ranking only; fixture inputs, no live platform claims.[/yellow]")
+
+
+@radar_app.command("analyze-reference")
+def radar_analyze_reference(
+    signal_file: Path = typer.Option(..., "--signal", exists=True, readable=True, dir_okay=False),
+    dna_file: Path = typer.Option(..., "--dna", exists=True, readable=True, dir_okay=False, help="Analysis notes JSON describing accessible reference media."),
+    store: Path = typer.Option(Path("data/radar.sqlite"), "--store"),
+) -> None:
+    """Save a reference and its supplied Creative DNA notes."""
+    signal = TrendSignal.model_validate_json(signal_file.read_text(encoding="utf-8"))
+    dna = CreativeDNA.model_validate_json(dna_file.read_text(encoding="utf-8"))
+    reference = Reference(signal=signal, dna=dna)
+    ref_id = ReferenceStore(store).add(reference)
+    print(f"[green]Saved creative reference:[/green] {ref_id}")
+    print(json.dumps(score_signal(signal), indent=2))
+    print("[yellow]Analysis notes are user-supplied; this command does not watch or analyze video automatically.[/yellow]")
+
+
+@radar_app.command("references")
+def radar_references(
+    store: Path = typer.Option(Path("data/radar.sqlite"), "--store"),
+    category: str | None = typer.Option(None, "--category"),
+    show: str | None = typer.Option(None, "--show", help="Reference ID to display."),
+) -> None:
+    """List saved references or show one by ID."""
+    db = ReferenceStore(store)
+    if show:
+        item = db.get(show)
+        if item is None:
+            raise typer.Exit(code=2)
+        print(json.dumps(item, indent=2, ensure_ascii=False))
+        return
+    items = db.list(category)
+    table = Table(title=f"Creative references ({len(items)})")
+    table.add_column("ID")
+    table.add_column("Category")
+    table.add_column("Score", justify="right")
+    table.add_column("Title")
+    for item in items:
+        table.add_row(item["id"], item["category"], f"{item['score']:.3f}", item["reference"]["signal"]["title"])
+    print(table)
+
+
+@radar_app.command("report")
+def radar_report(
+    fixture: Path = typer.Option(..., "--fixture", exists=True, readable=True, dir_okay=False),
+    output: Path = typer.Option(Path("output/radar-report.md"), "--output", "-o),
+) -> None:
+    """Export a Markdown summary report from local fixture signals."""
+    report = build_report(load_fixture(fixture))
+    output.parent.mkdir(parents=True, exist_ok=True)
+    lines = ["# GenForge Trend Radar Report", "", f"Generated: {report['generated_at']}", f"Signals: {report['count']}", "", "## Ranked signals", ""]
+    for row in report["ranked_signals"]:
+        sig = row["signal"]
+        lines.extend([f"### {sig['title']}", f"- Platform: {sig['platform']}", f"- Category: {sig['category']}", f"- Score: {row['score']:.3f}", f"- Confidence: {row['confidence']:.2f}", f"- Notes: {sig.get('notes') or 'No notes supplied'}", f"- Source: {sig.get('url') or 'not provided'}", ""])
+    lines.extend(["## Limitations", *[f"- {item}" for item in report["limitations"]]])
+    output.write_text("\\n".join(lines) + "\\n", encoding="utf-8")
+    print(f"[green]Markdown report saved:[/green] {output}")
