@@ -42,3 +42,10 @@ def test_radar_import_screening_maps_metadata(tmp_path) -> None:
     assert signal["shares"] == 14
     assert signal["published_at"] == "2026-11-18T12:00:00Z"
     assert signal["data_completeness"] > 0.75
+    history = report["history"]
+    assert history["recorded_snapshots"] == 1
+    assert len(history["signal_ids"]) == 1
+    from genforge_marketing.intelligence.trend_history import TrendHistoryStore
+    snapshots = TrendHistoryStore(tmp_path / "trend-history.sqlite").snapshots(history["signal_ids"][0])
+    assert len(snapshots) == 1
+    assert snapshots[0].views == 1500
