@@ -452,6 +452,42 @@ def radar_campaign_init(
     print("[yellow]Workspace initialized locally; no external APIs called.[/yellow]")
 
 
+@radar_app.command("campaign-status")
+def radar_campaign_status(
+    campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
+) -> None:
+    """Show campaign stages and the next incomplete action."""
+    from genforge_marketing.intelligence.campaign_orchestrator import load_campaign, status_report
+    try:
+        report = status_report(load_campaign(campaign))
+    except (ValueError, OSError) as exc:
+        raise typer.BadParameter(f"Cannot read campaign: {exc}") from exc
+    table = Table(title=f"Campaign: {report.get('campaign_name')}")
+    table.add_column("Stage")
+    table.add_column("Status")
+    for stage in report["stages"]:
+        table.add_row(stage["label"], stage["status"])
+    print(table)
+    print(f"Next stage: {report['next_stage'] or 'all stages complete'}")
+    print("[yellow]Review and publishing require human approval.[/yellow]")
+
+
+@radar_app.command("campaign-stage")
+def radar_campaign_stage(
+    campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True, dir_okay=False),
+    stage: str = typer.Option(..., "--stage"),
+    status: str = typer.Option(..., "--status"),
+    note: str = typer.Option("", "--note"),
+) -> None:
+    """Update the status of a campaign stage in its manifest."""
+    from genforge_marketing.intelligence.campaign_orchestrator import update_stage
+    try:
+        update_stage(campaign, stage, status, note)
+    except (ValueError, OSError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    print(f"[green]Updated[/green] {stage} → {status}")
+
+
 @radar_app.command("visual-notes")
 def radar_visual_notes(
     media_file: Path = typer.Option(..., "--media", exists=True, readable=True, dir_okay=False, help="Media inspection JSON containing sampled frame references."),
