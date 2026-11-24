@@ -210,6 +210,31 @@ def plan_month(
 
 
 
+@radar_app.command("inspect-audio")
+def radar_inspect_audio(
+    input_file: Path = typer.Option(..., "--input", exists=True, readable=True, dir_okay=False, help="Local video file."),
+    audio_output: Path = typer.Option(Path("output/extracted-audio.wav"), "--audio-output", help="Extracted WAV destination."),
+    output: Path = typer.Option(Path("output/audio-inspection.json"), "--output", "-o"),
+    noise_db: float = typer.Option(-35.0, "--noise-db", help="Silence detection threshold in dB (<=0)."),
+    min_silence: float = typer.Option(0.35, "--min-silence", min=0.01, help="Minimum silence duration in seconds."),
+) -> None:
+    """Extract audio and detect silence locally; does not transcribe speech."""
+    from genforge_marketing.intelligence.media_inspector import MediaInspectionError
+    from genforge_marketing.intelligence.audio_inspector import extract_audio_and_detect_silence
+
+    try:
+        report = extract_audio_and_detect_silence(input_file, audio_output, noise_db, min_silence)
+    except (MediaInspectionError, ValueError, FileNotFoundError) as exc:
+        print(f"[red]Audio inspection failed:[/red] {exc)
+        raise typer.Exit(code=1) from exc
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+    print(f"[green]Audio inspection saved:[/green] {output}")
+    print(f"Silence intervals: {report['silence_detection']['interval_count']}")
+    print(f"Extracted WAV: {audio_output}")
+    print("[yellow]Audio extracted and silence indexed; speech transcription was not performed.[/yellow]")
+
+
 @radar_app.command("detect-scenes")
 def radar_detect_scenes(
     input_file: Path = typer.Option(..., "--input", exists=True, readable=True, dir_okay=False, help="Local video file."),
