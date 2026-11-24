@@ -629,6 +629,21 @@ def radar_campaign_dashboard(
         print(f"[green]Dashboard JSON saved:[/green] {output}")
 
 
+@radar_app.command("campaign-production-handoff")
+def radar_campaign_production_handoff(
+    campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
+) -> None:
+    """Create a production package only after recorded human approval."""
+    from genforge_marketing.intelligence.campaign_production_handoff import create_production_handoff
+    try:
+        report = create_production_handoff(campaign)
+    except (ValueError, OSError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(f"Production handoff failed: {exc}") from exc
+    print(f"[bold cyan]Campaign:[/bold cyan] {report['campaign_name']}")
+    print(f"[green]Handoff created:[/green] {report['handoff_dir']}")
+    print(f"Files: {len(report['files'])} | Production started: {report['production_started']} | Publishing enabled: {report['publishing_enabled']}
+
+
 @radar_app.command("campaign-review-decision")
 def radar_campaign_review_decision(
     campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
