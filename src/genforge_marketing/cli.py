@@ -228,7 +228,7 @@ def radar_inspect_audio(
         print("[red]Audio inspection failed:[/red]", exc)
         raise typer.Exit(code=1) from exc
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(pack["creative_brief"], indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"[green]Audio inspection saved:[/green] {output}")
     print(f"Silence intervals: {report['silence_detection']['interval_count']}")
     print(f"Extracted WAV: {audio_output}")
