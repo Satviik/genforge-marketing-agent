@@ -571,6 +571,33 @@ def radar_campaign_build_creative(
     print("[yellow]Drafts only. Review before production. No AI API was called.[/yellow]")
 
 
+@radar_app.command("campaign-quality-gate")
+def radar_campaign_quality_gate(
+    campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
+    output: Path | None = typer.Option(None, "--output", "-o"),
+) -> None:
+    """Validate campaign draft artifacts using deterministic advisory checks."""
+    from genforge_marketing.intelligence.campaign_quality_gate import quality_gate
+    try:
+        report = quality_gate(campaign)
+    except (ValueError, OSError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(f"Campaign quality gate failed: {exc}") from exc
+    table = Table(title=f"Quality Gate: {report['campaign_name']}")
+    table.add_column("Check")
+    table.add_column("Result")
+    table.add_column("Details")
+    for item in report["checks"]:
+        table.add_row(item["name"], "[green]PASS[/green]" if item["passed"] else "[red]FAIL[/red]", item["detail"])
+    print(table)
+    print(f"Passed: {report['passed']} | Failed: {report['failed']}")
+    print(f"Ready for human review: {report['ready_for_human_review']}")
+    print("[yellow]Passing this gate does not approve or publish content.[/yellow]")
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+        print(f"[green]Report saved:[/green] {output}")
+
+
 @radar_app.command("visual-notes")
 def radar_visual_notes(
     media_file: Path = typer.Option(..., "--media", exists=True, readable=True, dir_okay=False, help="Media inspection JSON containing sampled frame references."),
