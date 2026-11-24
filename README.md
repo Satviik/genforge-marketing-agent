@@ -88,3 +88,13 @@ for signal in load_fixture(Path("data/trend-radar-demo-fixture.json")):
 ```
 
 Compare stored observations with `genforge-marketing radar compare <signal-id>`. A comparison requires at least two snapshots at distinct times; reported velocity is descriptive change per day, not a prediction. SQLite is local and is not synchronized across machines.
+
+## Creative Intelligence pattern summaries
+
+Aggregate recurring Creative DNA fields across saved references:
+
+```shell
+genforge-marketing radar creative-patterns --store data/radar.sqlite --output output/creative-patterns.json
+```
+
+This summarizes hook types, payoffs, visual patterns, editing patterns, psychological triggers, and adaptable principles by frequency. It counts supplied notes only; it does not infer causality or guarantee performance.
