@@ -20,6 +20,26 @@ def test_stage_update_validates_inputs(tmp_path):
     else:
         assert False, "expected invalid stage to raise"
 
+def test_stage_transition_requires_prerequisites(tmp_path):
+    create_campaign_workspace(tmp_path, "Lifecycle", "Product")
+    file = tmp_path / "lifecycle" / "campaign.json"
+    try:
+        update_stage(file, "production", "in_progress")
+    except ValueError as exc:
+        assert "storyboard" in str(exc)
+    else:
+        assert False, "production must not advance before storyboard"
+
+def test_prerequisites_accept_completed_or_skipped_stages(tmp_path):
+    create_campaign_workspace(tmp_path, "Lifecycle", "Product")
+    file = tmp_path / "lifecycle" / "campaign.json"
+    update_stage(file, "research", "skipped")
+    update_stage(file, "analysis", "completed")
+    update_stage(file, "brief", "completed")
+    update_stage(file, "storyboard", "completed")
+    updated = update_stage(file, "production", "in_progress")
+    assert updated["progress"]["production"] == "in_progress"
+
 def test_publishing_stage_requires_human_approval(tmp_path):
     create_campaign_workspace(tmp_path, "Approval gate", "Product")
     file=tmp_path/"approval-gate"/"campaign.json"
@@ -30,12 +50,23 @@ def test_publishing_stage_requires_human_approval(tmp_path):
     else:
         assert False, "publishing must be gated"
 
-def test_publishing_allowed_after_explicit_approval(tmp_path):
+def test_publishing_allowed_after_explicit_approval_and_prerequisites(tmp_path):
     create_campaign_workspace(tmp_path, "Approval gate", "Product")
     file=tmp_path/"approval-gate"/"campaign.json"
     campaign=load_campaign(file)
     campaign["status"]="approved_for_production"
     campaign["review_record"]={"decision":"approved"}
+    campaign["progress"]={"research":"completed","analysis":"completed","brief":"completed","storyboard":"completed","production":"completed","review":"approved"}
     file.write_text(__import__("json").dumps(campaign))
     updated=update_stage(file, "published", "in_progress")
     assert updated["progress"]["published"]=="in_progress"
+
+def test_metrics_requires_publishing_completed(tmp_path):
+    create_campaign_workspace(tmp_path, "Lifecycle", "Product")
+    file = tmp_path / "lifecycle" / "campaign.json"
+    try:
+        update_stage(file, "metrics", "in_progress")
+    except ValueError as exc:
+        assert "published" in str(exc)
+    else:
+        assert False, "metrics must wait for published"
