@@ -641,7 +641,7 @@ def radar_campaign_production_handoff(
         raise typer.BadParameter(f"Production handoff failed: {exc}") from exc
     print(f"[bold cyan]Campaign:[/bold cyan] {report['campaign_name']}")
     print(f"[green]Handoff created:[/green] {report['handoff_dir']}")
-    print(f"Files: {len(report['files'])} | Production started: {report['production_started']} | Publishing enabled: {report['publishing_enabled']}
+    print("Files: " + str(len(report["files"])) + " | Production started: " + str(report["production_started"]) + " | Publishing enabled: " + str(report["publishing_enabled"]))
 
 
 @radar_app.command("campaign-review-decision")
