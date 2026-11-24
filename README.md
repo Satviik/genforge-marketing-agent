@@ -37,6 +37,16 @@ genforge-marketing plan-month genforge-business.json --year 2026 --month 12 --po
 
 Publishing remains disabled by default. Scheduled events may prepare content and notify the owner, but must never bypass explicit approval. GitHub repositories are assessed before use; repository code is not installed or executed automatically.
 
+## Original creative generator
+
+Generate a structured, original Reel brief locally from product details and optional reference mechanics:
+
+```bash
+genforge-marketing radar generate-creative --product "Custom bookmark" --description "Personalized 3D printed bookmark" --objective inquiries --audience "book lovers and gift buyers" --duration 20 --breakdown output/creative-breakdown.json --output output/original-reel-brief.json
+```
+
+This deterministic starter creates concept and hook options, timed scenes, shot/edit direction, captions, CTAs and adaptation notes. It calls no AI model or paid API. See [Original Creative Generator](docs/ORIGINAL_CREATIVE_GENERATOR.md).
+
 ## Creative breakdown
 
 Combine the reconstructed timeline and optional manual frame observations into a reusable structure:
