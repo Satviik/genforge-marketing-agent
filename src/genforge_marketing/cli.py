@@ -410,7 +410,7 @@ def radar_campaign_pack(
     except (ValueError, OSError) as exc:
         raise typer.BadParameter(f"Could not assemble campaign pack: {exc}") from exc
     print(f"[green]Campaign brief:[/green] {brief_path}")
-    print(f"[green]Claude handoff:[/green] {handoff_path)
+    print(f"[green]Claude handoff:[/green] {handoff_path}")
     print("[yellow]Draft package assembled offline; review before production. No external model called.[/yellow]")
 
 
