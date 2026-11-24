@@ -598,6 +598,32 @@ def radar_campaign_quality_gate(
         print(f"[green]Report saved:[/green] {output}")
 
 
+@radar_app.command("campaign-completion")
+def radar_campaign_completion(
+    campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
+    output: Path | None = typer.Option(None, "--output", "-o"),
+) -> None:
+    """Audit campaign completion and report outstanding requirements."""
+    from genforge_marketing.intelligence.campaign_completion import campaign_completion_report
+    try:
+        report = campaign_completion_report(campaign)
+    except (ValueError, OSError, json.JSONDecodeError) as exc:
+        raise typer.BadParameter(f"Campaign completion audit failed: {exc}") from exc
+    print(f"[bold cyan]Campaign:[/bold cyan] {report['campaign_name']}")
+    print(f"Completion: {report['status']} | Issues: {report['issue_count']}")
+    summary = report["summary"]
+    print(f"Final stages: {len(summary['completed_final_stages'])}/{len(summary['required_final_stages'])}")
+    print(f"Production tasks: {summary['completed_tasks']}/{summary['production_tasks']} completed")
+    print(f"Assets: {summary['approved_assets']}/{summary['assets']} approved")
+    for issue in report["issues"][:10]:
+        print(f" - {issue['code']}: {issue['message']}")
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+        print(f"[green]Completion report saved:[/green] {output}")
+    print("[yellow]Read-only audit. Does not mark campaigns complete or publish.[/yellow]")
+
+
 @radar_app.command("campaign-dashboard")
 def radar_campaign_dashboard(
     campaign: Path = typer.Option(..., "--campaign", exists=True, readable=True),
