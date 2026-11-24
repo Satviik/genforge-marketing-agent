@@ -618,7 +618,7 @@ def radar_campaign_dashboard(
     if output:
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
-        print(f"[green]Dashboard JSON saved:[/green] {output")
+        print(f"[green]Dashboard JSON saved:[/green] {output}"))
 
 
 @radar_app.command("visual-notes")
